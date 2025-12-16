@@ -15,9 +15,15 @@ export interface SavedDataset extends ProcessedData {
   createdAt: number;
 }
 
+export interface OrderBreakdownItem {
+  orderNo: string;
+  qty: number;
+}
+
 export interface SizeSummary {
   size: string;
   qty: number;
+  orderBreakdown: OrderBreakdownItem[];
 }
 
 export interface NestingResult {

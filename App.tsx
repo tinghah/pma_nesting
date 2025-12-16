@@ -92,15 +92,22 @@ const App: React.FC = () => {
     if (!activeDataset) return;
     const data = activeDataset;
 
+    // Filter rows
     const filteredRows = data.rows.filter(row => {
         const rowSO = String(row['SO_Number'] || '').trim();
         return selectedOrders.some(order => order === rowSO);
     });
 
-    const sizeSums: { [key: string]: number } = {};
-    data.sizeColumns.forEach(size => sizeSums[size] = 0);
+    // Initialize map structure: Size -> { totalQty, orders: { orderNo: qty } }
+    const sizeDataMap = new Map<string, { total: number, orders: Map<string, number> }>();
+    data.sizeColumns.forEach(size => {
+        sizeDataMap.set(size, { total: 0, orders: new Map() });
+    });
 
+    // Calculate sums
     filteredRows.forEach(row => {
+        const soNum = String(row['SO_Number'] || 'Unknown').trim();
+        
         data.sizeColumns.forEach(size => {
             const val = row[size];
             let numVal = 0;
@@ -109,16 +116,32 @@ const App: React.FC = () => {
             } else if (typeof val === 'string') {
                 numVal = parseFloat(val);
             }
-            if (!isNaN(numVal)) {
-                sizeSums[size] += numVal;
+            
+            if (!isNaN(numVal) && numVal > 0) {
+                const entry = sizeDataMap.get(size)!;
+                entry.total += numVal;
+                
+                const currentOrderQty = entry.orders.get(soNum) || 0;
+                entry.orders.set(soNum, currentOrderQty + numVal);
             }
         });
     });
 
-    const breakdown = data.sizeColumns.map(size => ({
-        size,
-        qty: sizeSums[size]
-    })).filter(item => item.qty > 0); 
+    // Transform to Result Array
+    const breakdown = data.sizeColumns.map(size => {
+        const entry = sizeDataMap.get(size)!;
+        
+        const orderBreakdown = Array.from(entry.orders.entries()).map(([orderNo, qty]) => ({
+            orderNo,
+            qty
+        })).sort((a, b) => b.qty - a.qty); // Sort by quantity descending
+
+        return {
+            size,
+            qty: entry.total,
+            orderBreakdown
+        };
+    }).filter(item => item.qty > 0); 
 
     const totalQty = breakdown.reduce((acc, curr) => acc + curr.qty, 0);
 

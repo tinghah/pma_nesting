@@ -31,9 +31,12 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
     if (!result) return;
     const wb = XLSX.utils.book_new();
     const wsData = [
-      ["Size", "Total Qty"],
-      ...result.breakdown.map(item => [item.size, item.qty]),
-      ["Total", result.totalQty]
+      ["Size", "Total Qty", "Order Details"],
+      ...result.breakdown.map(item => {
+        const details = item.orderBreakdown.map(b => `${b.orderNo}:${b.qty}`).join(', ');
+        return [item.size, item.qty, details];
+      }),
+      ["Total", result.totalQty, ""]
     ];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, "Nesting Summary");
@@ -93,29 +96,34 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
                 <th scope="col" className={`px-6 py-3 text-right text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
                   {t.qty}
                 </th>
-                <th scope="col" className={`px-6 py-3 text-right text-xs font-bold uppercase tracking-wider w-1/3 ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
-                  {t.share}
+                {/* Replaced % Share with Order Details */}
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider w-1/2 ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
+                  {t.orderDetails}
                 </th>
               </tr>
             </thead>
             <tbody className={`divide-y ${isDark ? 'divide-slate-700 bg-slate-800' : 'divide-gray-100 bg-white'}`}>
               {result.breakdown.map((item, idx) => {
-                const percent = ((item.qty / result.totalQty) * 100).toFixed(1);
                 return (
                   <tr key={item.size} className={`transition-colors ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'}`}>
-                    <td className={`px-6 py-2.5 whitespace-nowrap text-sm font-medium border-r border-transparent ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-3 whitespace-nowrap text-sm font-medium border-r border-transparent ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
                       {item.size}
                     </td>
-                    <td className={`px-6 py-2.5 whitespace-nowrap text-sm text-right font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                    <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-mono font-semibold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                       {item.qty}
                     </td>
-                     <td className="px-6 py-2.5 whitespace-nowrap text-sm text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{percent}%</span>
-                        <div className={`w-16 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-100'}`}>
-                            <div className="h-full bg-blue-500" style={{ width: `${percent}%` }}></div>
+                     <td className="px-6 py-3 text-sm">
+                        <div className="flex flex-wrap gap-2">
+                           {item.orderBreakdown.map((detail, dIdx) => (
+                               <div 
+                                key={dIdx} 
+                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300' : 'bg-gray-50 border-gray-200 text-gray-700'}`}
+                               >
+                                   <span className="opacity-70 mr-1">{detail.orderNo}:</span>
+                                   <span className={`${isDark ? 'text-white' : 'text-black'} font-mono`}>{detail.qty}</span>
+                               </div>
+                           ))}
                         </div>
-                      </div>
                     </td>
                   </tr>
                 );

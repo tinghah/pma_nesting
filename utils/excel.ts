@@ -20,16 +20,10 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
           return;
         }
 
-        // Locate the header row. It might not be the first row.
-        // We look for specific keywords mentioned in requirements.
-        // "訂單編號\nOrder NO" or "指令\nQty"
-        
+        // Locate the header row.
         let headerRowIndex = 0;
         let headers: string[] = [];
         
-        const targetOrderCol = "訂單編號\nOrder NO";
-        const targetQtyCol = "指令\nQty";
-
         // Simple heuristic: find row containing the complex headers
         for (let i = 0; i < Math.min(rawJson.length, 20); i++) {
            const row = rawJson[i];
@@ -52,8 +46,6 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
             return h.toString();
         });
 
-        // Now re-parse or slice the data using these headers
-        // We manually construct the objects to handle the offset
         const rawRows = rawJson.slice(headerRowIndex + 1);
         const rows: RawRow[] = rawRows.map(row => {
             const obj: RawRow = {};
@@ -64,24 +56,48 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
         });
 
         // Identify Size Columns
-        // Logic: Size columns start AFTER the column containing 'Qty' (originally '指令\nQty')
-        // We need to find the index of the column that *was* '指令\nQty'.
-        // In our cleanHeaders, we kept the original name if it wasn't the Order NO one.
-        // So we look for a header containing 'Qty'.
-        
         const qtyColIndex = cleanHeaders.findIndex(h => h.includes('Qty') || h.includes('指令'));
         
-        let sizeColumns: string[] = [];
+        let potentialSizeCols: string[] = [];
+        
+        // Get candidates either after Qty column or assume all numeric-like columns
         if (qtyColIndex !== -1 && qtyColIndex < cleanHeaders.length - 1) {
-            sizeColumns = cleanHeaders.slice(qtyColIndex + 1);
-            // Filter out obviously non-size columns if any (e.g., empty strings or 'Total')
-            sizeColumns = sizeColumns.filter(s => s && !s.toLowerCase().includes('total'));
+            potentialSizeCols = cleanHeaders.slice(qtyColIndex + 1);
         } else {
-            // Fallback: Look for short numeric-like headers (3K, 4, 5, etc.)
-            sizeColumns = cleanHeaders.filter(h => /^[0-9]/.test(h));
+            potentialSizeCols = cleanHeaders; 
         }
 
-        // Extract unique SO Numbers for autocomplete/validation
+        const sizeColumns = potentialSizeCols.filter(header => {
+            if (!header) return false;
+            const h = String(header).trim();
+            const lowerH = h.toLowerCase();
+
+            // Explicit Exclusions
+            if (['total', 'qty', 'order', 'so_number'].some(ex => lowerH.includes(ex))) return false;
+
+            // Check for Chinese characters (CJK Unified Ideographs)
+            const hasChinese = /[\u4e00-\u9fff]/.test(h);
+
+            // Logic:
+            // 1. If it contains "UK" (case insensitive), it is likely a size (e.g., "4 UK").
+            // 2. If it is purely numeric (with optional decimals), it is a size (e.g., "3.5", "10").
+            // 3. If it has Chinese characters and NO "UK", it is likely a metadata column (e.g., "備註").
+            
+            if (lowerH.includes('uk')) return true;
+
+            if (hasChinese) {
+                // Contains Chinese but no UK -> Reject
+                return false;
+            }
+
+            // Check if it looks like a number (e.g. "3", "3.5", "11")
+            // Allow digits and dots.
+            if (/^[\d\.]+$/.test(h)) return true;
+
+            return false;
+        });
+
+        // Extract unique SO Numbers
         const soNumbers = Array.from(new Set(
             rows
             .map(r => r['SO_Number'])

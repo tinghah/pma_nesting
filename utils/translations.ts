@@ -22,7 +22,7 @@ export const translations = {
     nameOptional: "Name (Optional)",
     newSource: "New Source",
     cancel: "Cancel",
-    share: "% Share",
+    orderDetails: "Order Details (Qty)",
     size: "Size",
     qty: "Qty",
     grandTotal: "Grand Total"
@@ -48,7 +48,7 @@ export const translations = {
     nameOptional: "အမည် (စိတ်ကြိုက်)",
     newSource: "အသစ်",
     cancel: "မလုပ်တော့ပါ",
-    share: "% ခွဲဝေမှု",
+    orderDetails: "အော်ဒါ အသေးစိတ်",
     size: "ဆိုဒ်",
     qty: "အရေအတွက်",
     grandTotal: "စုစုပေါင်း"
@@ -74,7 +74,7 @@ export const translations = {
     nameOptional: "名稱 (可選)",
     newSource: "新增來源",
     cancel: "取消",
-    share: "占比",
+    orderDetails: "訂單明細 (數量)",
     size: "尺寸",
     qty: "數量",
     grandTotal: "總計"
