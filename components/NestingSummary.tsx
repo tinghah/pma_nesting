@@ -30,15 +30,36 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
   const exportToExcel = () => {
     if (!result) return;
     const wb = XLSX.utils.book_new();
+    
+    // Header Row
+    const headers = ["Size", "Total Qty", "Order Details"];
+
     const wsData = [
-      ["Size", "Total Qty", "Order Details"],
+      headers,
       ...result.breakdown.map(item => {
-        const details = item.orderBreakdown.map(b => `${b.orderNo}:${b.qty}`).join(', ');
+        const details = item.orderBreakdown.map(b => {
+            let str = `${b.orderNo}:${b.qty}`;
+            if (b.extraInfo && Object.keys(b.extraInfo).length > 0) {
+                const extras = Object.values(b.extraInfo).join('/');
+                str += ` (${extras})`;
+            }
+            return str;
+        }).join(', ');
         return [item.size, item.qty, details];
       }),
       ["Total", result.totalQty, ""]
     ];
+    
     const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    // Auto-width adjustment approximation
+    const wscols = [
+        { wch: 10 }, // Size
+        { wch: 12 }, // Total Qty
+        { wch: 100 } // Details
+    ];
+    ws['!cols'] = wscols;
+
     XLSX.utils.book_append_sheet(wb, ws, "Nesting Summary");
     XLSX.writeFile(wb, "PMA_Nesting_Summary.xlsx");
   };
@@ -82,8 +103,18 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
 
       {/* Table View */}
       <div className={`rounded-xl shadow-sm border flex-1 flex flex-col overflow-hidden transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-        <div className={`px-5 py-3 border-b ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50/50'}`}>
+        <div className={`px-5 py-3 border-b flex justify-between items-center ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50/50'}`}>
           <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>{t.sizeBreakdown}</h3>
+          
+          {/* Legend for Extras if they exist */}
+          {result.infoColumns.length > 0 && (
+             <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400">
+                <span>Showing:</span>
+                {result.infoColumns.map(col => (
+                    <span key={col} className="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-slate-700 dark:text-slate-300">{col}</span>
+                ))}
+             </div>
+          )}
         </div>
         
         <div className="flex-1 overflow-auto custom-scrollbar">
@@ -121,6 +152,15 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
                                >
                                    <span className="opacity-70 mr-1">{detail.orderNo}:</span>
                                    <span className={`${isDark ? 'text-white' : 'text-black'} font-mono`}>{detail.qty}</span>
+                                   
+                                   {/* Render Extra Info */}
+                                   {detail.extraInfo && Object.keys(detail.extraInfo).length > 0 && (
+                                       <span className={`ml-2 pl-2 border-l ${isDark ? 'border-slate-500 text-emerald-400' : 'border-gray-300 text-emerald-600'} flex gap-1`}>
+                                           {Object.values(detail.extraInfo).map((val, vIdx) => (
+                                               <span key={vIdx} className="max-w-[100px] truncate">{val}</span>
+                                           ))}
+                                       </span>
+                                   )}
                                </div>
                            ))}
                         </div>

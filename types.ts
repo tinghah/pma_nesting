@@ -5,7 +5,8 @@ export interface RawRow {
 export interface ProcessedData {
   headers: string[];
   rows: RawRow[];
-  sizeColumns: string[];
+  sizeColumns: string[]; // Columns treated as numeric quantities
+  infoColumns: string[]; // Columns treated as metadata (e.g., Color, Gender)
   soNumbers: string[];
 }
 
@@ -18,6 +19,7 @@ export interface SavedDataset extends ProcessedData {
 export interface OrderBreakdownItem {
   orderNo: string;
   qty: number;
+  extraInfo?: Record<string, string | number>; // Stores data from infoColumns
 }
 
 export interface SizeSummary {
@@ -29,4 +31,5 @@ export interface SizeSummary {
 export interface NestingResult {
   totalQty: number;
   breakdown: SizeSummary[];
+  infoColumns: string[]; // Pass this through to the result for display purposes
 }

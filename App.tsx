@@ -98,8 +98,15 @@ const App: React.FC = () => {
         return selectedOrders.some(order => order === rowSO);
     });
 
-    // Initialize map structure: Size -> { totalQty, orders: { orderNo: qty } }
-    const sizeDataMap = new Map<string, { total: number, orders: Map<string, number> }>();
+    // Initialize map structure: 
+    // Size -> { totalQty, orders: Map<orderNo, { qty, extras }> }
+    // Note: If multiple rows exist for same order (split shipments?), we sum qty.
+    // Extras are currently taken from the *last* seen row for that order/size combo.
+    const sizeDataMap = new Map<string, { 
+        total: number, 
+        orders: Map<string, { qty: number, extras: Record<string, string | number> }> 
+    }>();
+
     data.sizeColumns.forEach(size => {
         sizeDataMap.set(size, { total: 0, orders: new Map() });
     });
@@ -107,6 +114,17 @@ const App: React.FC = () => {
     // Calculate sums
     filteredRows.forEach(row => {
         const soNum = String(row['SO_Number'] || 'Unknown').trim();
+        
+        // Collect extra info for this row
+        const rowExtras: Record<string, string | number> = {};
+        if (data.infoColumns) {
+            data.infoColumns.forEach(col => {
+                const val = row[col];
+                if (val !== undefined && val !== null) {
+                    rowExtras[col] = String(val); // Convert to string for consistent display
+                }
+            });
+        }
         
         data.sizeColumns.forEach(size => {
             const val = row[size];
@@ -118,11 +136,19 @@ const App: React.FC = () => {
             }
             
             if (!isNaN(numVal) && numVal > 0) {
-                const entry = sizeDataMap.get(size)!;
-                entry.total += numVal;
-                
-                const currentOrderQty = entry.orders.get(soNum) || 0;
-                entry.orders.set(soNum, currentOrderQty + numVal);
+                const entry = sizeDataMap.get(size);
+                if (entry) {
+                    entry.total += numVal;
+                    
+                    const currentOrderData = entry.orders.get(soNum) || { qty: 0, extras: {} };
+                    
+                    // Update Quantity
+                    currentOrderData.qty += numVal;
+                    // Update Extras (Merge, preferring latest)
+                    currentOrderData.extras = { ...currentOrderData.extras, ...rowExtras };
+                    
+                    entry.orders.set(soNum, currentOrderData);
+                }
             }
         });
     });
@@ -131,9 +157,10 @@ const App: React.FC = () => {
     const breakdown = data.sizeColumns.map(size => {
         const entry = sizeDataMap.get(size)!;
         
-        const orderBreakdown = Array.from(entry.orders.entries()).map(([orderNo, qty]) => ({
+        const orderBreakdown = Array.from(entry.orders.entries()).map(([orderNo, data]) => ({
             orderNo,
-            qty
+            qty: data.qty,
+            extraInfo: data.extras
         })).sort((a, b) => b.qty - a.qty); // Sort by quantity descending
 
         return {
@@ -145,7 +172,11 @@ const App: React.FC = () => {
 
     const totalQty = breakdown.reduce((acc, curr) => acc + curr.qty, 0);
 
-    setNestingResult({ totalQty, breakdown });
+    setNestingResult({ 
+        totalQty, 
+        breakdown,
+        infoColumns: data.infoColumns || []
+    });
   };
 
   return (
@@ -192,9 +223,15 @@ const App: React.FC = () => {
       </main>
 
       <footer className={`border-t mt-auto ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col items-center gap-1.5">
             <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                 &copy; {new Date().getFullYear()} Pou Chen Myanmar. Internal Use Only.
+            </p>
+            <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                Developed by <span className="font-semibold">Htet Aung Hlaing (Ting)</span> @ PCM PCAG IT Team
+            </p>
+            <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                Contact: <a href="mailto:ting.hah@pouchen.com.mm" className="hover:underline hover:text-blue-500">ting.hah@pouchen.com.mm</a> & <a href="mailto:mpc.erp@pouchen.com.mm" className="hover:underline hover:text-blue-500">mpc.erp@pouchen.com.mm</a>
             </p>
          </div>
       </footer>

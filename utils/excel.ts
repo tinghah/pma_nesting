@@ -8,11 +8,10 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
+        const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         
-        // Parse JSON with header: 1 to get raw array of arrays first to analyze headers
         const rawJson = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
         
         if (!rawJson || rawJson.length === 0) {
@@ -24,10 +23,10 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
         let headerRowIndex = 0;
         let headers: string[] = [];
         
-        // Simple heuristic: find row containing the complex headers
+        // Simple heuristic: find row containing 'Order NO'
         for (let i = 0; i < Math.min(rawJson.length, 20); i++) {
            const row = rawJson[i];
-           if (row.some(cell => typeof cell === 'string' && (cell.includes('Order NO') || cell.includes('Order No')))) {
+           if (row && Array.isArray(row) && row.some(cell => cell && String(cell).match(/Order\s*N[oO]/i))) {
              headerRowIndex = i;
              headers = row;
              break;
@@ -35,15 +34,25 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
         }
         
         if (headers.length === 0) {
-            // Fallback: Use first row
-            headers = rawJson[0];
+            headers = rawJson[0] || [];
         }
 
-        // Map headers to clean names
+        // Clean Headers & ensure uniqueness
+        const usedHeaders = new Set<string>();
         const cleanHeaders = headers.map(h => {
-            if (!h) return `Col_${Math.random()}`; // Handle empty headers
-            if (h.toString().includes('Order NO') || h.toString().includes('Order No')) return 'SO_Number';
-            return h.toString();
+            let base = h ? String(h).trim() : `Col`;
+            
+            // Standardize SO Number column
+            if (base.match(/Order\s*N[oO]/i)) base = 'SO_Number';
+
+            // Handle duplicates
+            let unique = base;
+            let counter = 1;
+            while (usedHeaders.has(unique)) {
+                unique = `${base}_${counter++}`;
+            }
+            usedHeaders.add(unique);
+            return unique;
         });
 
         const rawRows = rawJson.slice(headerRowIndex + 1);
@@ -55,43 +64,23 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
             return obj;
         });
 
-        // Identify Size Columns
-        const qtyColIndex = cleanHeaders.findIndex(h => h.includes('Qty') || h.includes('指令'));
+        // Heuristic: Identify Size Columns
+        const qtyColIndex = cleanHeaders.findIndex(h => h.match(/Qty|指令/i));
         
-        let potentialSizeCols: string[] = [];
-        
-        // Get candidates either after Qty column or assume all numeric-like columns
-        if (qtyColIndex !== -1 && qtyColIndex < cleanHeaders.length - 1) {
-            potentialSizeCols = cleanHeaders.slice(qtyColIndex + 1);
-        } else {
-            potentialSizeCols = cleanHeaders; 
-        }
-
-        const sizeColumns = potentialSizeCols.filter(header => {
+        const suggestedSizeColumns = cleanHeaders.filter(header => {
             if (!header) return false;
-            const h = String(header).trim();
+            const h = header;
             const lowerH = h.toLowerCase();
 
-            // Explicit Exclusions
-            if (['total', 'qty', 'order', 'so_number'].some(ex => lowerH.includes(ex))) return false;
+            // Always exclude specific metadata
+            if (['total', 'qty', 'order', 'so_number', 'po', 'article'].some(ex => lowerH.includes(ex))) return false;
 
-            // Check for Chinese characters (CJK Unified Ideographs)
+            // Include if it looks like a size
             const hasChinese = /[\u4e00-\u9fff]/.test(h);
-
-            // Logic:
-            // 1. If it contains "UK" (case insensitive), it is likely a size (e.g., "4 UK").
-            // 2. If it is purely numeric (with optional decimals), it is a size (e.g., "3.5", "10").
-            // 3. If it has Chinese characters and NO "UK", it is likely a metadata column (e.g., "備註").
+            if (lowerH.includes('uk') || lowerH.includes('us')) return true;
+            if (hasChinese) return false; // Usually metadata if Chinese and no "UK"
             
-            if (lowerH.includes('uk')) return true;
-
-            if (hasChinese) {
-                // Contains Chinese but no UK -> Reject
-                return false;
-            }
-
-            // Check if it looks like a number (e.g. "3", "3.5", "11")
-            // Allow digits and dots.
+            // Is numeric-ish (3, 3.5, 10, etc)
             if (/^[\d\.]+$/.test(h)) return true;
 
             return false;
@@ -108,7 +97,8 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
         resolve({
             headers: cleanHeaders,
             rows,
-            sizeColumns,
+            sizeColumns: suggestedSizeColumns, // These are just suggestions now
+            infoColumns: [], // Default to none, let user choose
             soNumbers
         });
 
@@ -118,6 +108,6 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
     };
 
     reader.onerror = (error) => reject(error);
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   });
 };

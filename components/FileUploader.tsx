@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, CheckCircle, AlertCircle, Database, Trash2, Plus, X } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Database, Trash2, Plus, X, Server, Settings2, CheckSquare, Square } from 'lucide-react';
 import { parseExcelFile } from '../utils/excel';
 import { ProcessedData, SavedDataset } from '../types';
 import { Language, translations } from '../utils/translations';
@@ -31,12 +31,27 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   
   const [showUpload, setShowUpload] = useState(savedDatasets.length === 0);
+  
+  // New state for Column Configuration
+  const [pendingData, setPendingData] = useState<ProcessedData | null>(null);
+  const [selectedSizeCols, setSelectedSizeCols] = useState<Set<string>>(new Set());
+  const [selectedInfoCols, setSelectedInfoCols] = useState<Set<string>>(new Set());
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const generateId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      try {
+        return crypto.randomUUID();
+      } catch (e) { }
+    }
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
 
   const handleFile = async (file: File) => {
     if (!file) return;
     
-    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+    if (!file.name.match(/\.xls(x)?$/i)) {
       setError(t.uploadValid);
       return;
     }
@@ -48,31 +63,97 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     try {
       const data: ProcessedData = await parseExcelFile(file);
       
-      let finalName = customName.trim();
-      if (!finalName) {
-        const count = savedDatasets.length;
-        finalName = `DS-${String(count + 1).padStart(2, '0')}`;
+      // Initialize configuration state with heuristics
+      setPendingData(data);
+      setSelectedSizeCols(new Set(data.sizeColumns));
+      setSelectedInfoCols(new Set()); // Default empty
+      
+      if (!customName) {
+        setCustomName(file.name.replace(/\.xlsx?$/, ''));
       }
 
-      const newDataset: SavedDataset = {
-        ...data,
-        id: crypto.randomUUID(),
-        name: finalName,
-        createdAt: Date.now()
-      };
-
-      onDataSaved(newDataset);
-      setFileName(null);
-      setCustomName('');
-      setShowUpload(false); 
-
     } catch (err) {
-      console.error(err);
-      setError('Failed to parse file.');
+      console.error("Excel Parsing Error:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to parse: ${errorMessage}`);
       setFileName(null);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLoadServerFile = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+        const response = await fetch('/data.xlsx');
+        if (!response.ok) {
+            const fallback = await fetch('./data.xlsx');
+            if (!fallback.ok) throw new Error("File 'data.xlsx' not found in project root.");
+            const blob = await fallback.blob();
+            const file = new File([blob], "data.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            await handleFile(file);
+            return;
+        }
+        const blob = await response.blob();
+        const file = new File([blob], "data.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        await handleFile(file);
+    } catch (err) {
+        console.error(err);
+        setError(t.serverFileError);
+        setIsLoading(false);
+    }
+  };
+
+  const confirmDataset = () => {
+    if (!pendingData) return;
+
+    // Apply the user's configuration
+    const finalData: ProcessedData = {
+        ...pendingData,
+        sizeColumns: Array.from(selectedSizeCols),
+        infoColumns: Array.from(selectedInfoCols)
+    };
+
+    let finalName = customName.trim();
+    if (!finalName) {
+       finalName = `DS-${String(savedDatasets.length + 1).padStart(2, '0')}`;
+    }
+
+    const newDataset: SavedDataset = {
+      ...finalData,
+      id: generateId(),
+      name: finalName,
+      createdAt: Date.now()
+    };
+
+    onDataSaved(newDataset);
+    
+    // Reset State
+    setFileName(null);
+    setCustomName('');
+    setPendingData(null);
+    setShowUpload(false);
+  };
+
+  const cancelConfig = () => {
+    setPendingData(null);
+    setFileName(null);
+    setError(null);
+  };
+
+  const toggleSizeCol = (col: string) => {
+    const next = new Set(selectedSizeCols);
+    if (next.has(col)) next.delete(col);
+    else next.add(col);
+    setSelectedSizeCols(next);
+  };
+
+  const toggleInfoCol = (col: string) => {
+    const next = new Set(selectedInfoCols);
+    if (next.has(col)) next.delete(col);
+    else next.add(col);
+    setSelectedInfoCols(next);
   };
 
   const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
@@ -82,6 +163,81 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   };
+
+  // Render the Column Configuration Mode
+  if (pendingData) {
+    return (
+        <div className={`rounded-lg shadow-sm border overflow-hidden flex flex-col transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+            <div className={`px-4 py-3 border-b flex justify-between items-center ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50/50 border-gray-100'}`}>
+                <h2 className={`text-xs font-bold uppercase tracking-wider flex items-center ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                    <Settings2 className="w-3.5 h-3.5 mr-1.5" />
+                    Configure Columns
+                </h2>
+                <button onClick={cancelConfig} className="text-gray-400 hover:text-gray-500">
+                    <X className="w-4 h-4" />
+                </button>
+            </div>
+            
+            <div className="p-3 space-y-4">
+                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-2 text-xs text-yellow-800 dark:text-yellow-200">
+                    <p className="font-medium">Please review:</p>
+                    <p>1. Select columns that contain <b>Sizes</b> (quantities).</p>
+                    <p>2. Select extra columns to show (e.g. Color, Article).</p>
+                 </div>
+
+                 {/* Size Columns Selection */}
+                 <div>
+                    <h3 className={`text-xs font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Size Columns (Quantities)</h3>
+                    <div className="max-h-[150px] overflow-y-auto custom-scrollbar border rounded p-2 grid grid-cols-2 gap-2 bg-gray-50/50 dark:bg-slate-900/50 dark:border-slate-700">
+                        {pendingData.headers.filter(h => h !== 'SO_Number').map(h => {
+                             const isChecked = selectedSizeCols.has(h);
+                             return (
+                                 <label key={`size-${h}`} className="flex items-center gap-2 cursor-pointer group">
+                                     <div onClick={() => toggleSizeCol(h)} className={`flex-shrink-0 ${isChecked ? 'text-blue-600' : 'text-gray-300 dark:text-slate-600'}`}>
+                                         {isChecked ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                     </div>
+                                     <span className={`text-xs truncate select-none ${isChecked ? (isDark ? 'text-white' : 'text-gray-900') : (isDark ? 'text-slate-500' : 'text-gray-500')}`}>
+                                        {h}
+                                     </span>
+                                 </label>
+                             );
+                        })}
+                    </div>
+                 </div>
+
+                 {/* Info Columns Selection */}
+                 <div>
+                    <h3 className={`text-xs font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Additional Info (Display Only)</h3>
+                    <div className="max-h-[100px] overflow-y-auto custom-scrollbar border rounded p-2 grid grid-cols-1 gap-2 bg-gray-50/50 dark:bg-slate-900/50 dark:border-slate-700">
+                        {pendingData.headers.filter(h => h !== 'SO_Number' && !selectedSizeCols.has(h)).map(h => {
+                             const isChecked = selectedInfoCols.has(h);
+                             return (
+                                 <label key={`info-${h}`} className="flex items-center gap-2 cursor-pointer group">
+                                     <div onClick={() => toggleInfoCol(h)} className={`flex-shrink-0 ${isChecked ? 'text-emerald-600' : 'text-gray-300 dark:text-slate-600'}`}>
+                                         {isChecked ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                                     </div>
+                                     <span className={`text-xs truncate select-none ${isChecked ? (isDark ? 'text-white' : 'text-gray-900') : (isDark ? 'text-slate-500' : 'text-gray-500')}`}>
+                                        {h}
+                                     </span>
+                                 </label>
+                             );
+                        })}
+                        {pendingData.headers.filter(h => h !== 'SO_Number' && !selectedSizeCols.has(h)).length === 0 && (
+                            <span className="text-[10px] text-gray-400 italic text-center">No other columns available</span>
+                        )}
+                    </div>
+                 </div>
+
+                 <button
+                    onClick={confirmDataset}
+                    className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors"
+                 >
+                    Save Configuration
+                 </button>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className={`rounded-lg shadow-sm border overflow-hidden transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
@@ -149,6 +305,26 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 </div>
               )}
             </div>
+
+            <div className="flex items-center gap-2">
+                <div className={`h-px flex-1 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}></div>
+                <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{t.or}</span>
+                <div className={`h-px flex-1 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}></div>
+            </div>
+
+            <button
+                onClick={handleLoadServerFile}
+                disabled={isLoading}
+                className={`w-full flex items-center justify-center px-4 py-2 border text-sm font-medium rounded shadow-sm transition-colors
+                  ${isDark 
+                    ? 'bg-slate-700 border-slate-600 text-slate-200 hover:bg-slate-600' 
+                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }
+                `}
+            >
+                <Server className="w-4 h-4 mr-2 text-blue-500" />
+                {t.loadServer}
+            </button>
             
             {error && (
               <div className="flex items-start text-xs text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 p-2 rounded">

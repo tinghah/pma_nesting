@@ -25,7 +25,10 @@ export const translations = {
     orderDetails: "Order Details (Qty)",
     size: "Size",
     qty: "Qty",
-    grandTotal: "Grand Total"
+    grandTotal: "Grand Total",
+    loadServer: "Load 'data.xlsx'",
+    serverFileError: "Failed to load 'data.xlsx'. Please ensure it exists in the project root.",
+    or: "- OR -"
   },
   my: {
     appTitle: "PMA Nesting",
@@ -51,7 +54,10 @@ export const translations = {
     orderDetails: "အော်ဒါ အသေးစိတ်",
     size: "ဆိုဒ်",
     qty: "အရေအတွက်",
-    grandTotal: "စုစုပေါင်း"
+    grandTotal: "စုစုပေါင်း",
+    loadServer: "'data.xlsx' ကို ဖွင့်မည်",
+    serverFileError: "'data.xlsx' ရှာမတွေ့ပါ။",
+    or: "- သို့မဟုတ် -"
   },
   tw: {
     appTitle: "PMA 排版系統",
@@ -77,6 +83,9 @@ export const translations = {
     orderDetails: "訂單明細 (數量)",
     size: "尺寸",
     qty: "數量",
-    grandTotal: "總計"
+    grandTotal: "總計",
+    loadServer: "加載 'data.xlsx'",
+    serverFileError: "無法加載 'data.xlsx'，請確認文件是否存在。",
+    or: "- 或 -"
   }
 };
