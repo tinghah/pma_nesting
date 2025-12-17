@@ -223,12 +223,13 @@ const App: React.FC = () => {
       </main>
 
       <footer className={`border-t mt-auto ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col items-center gap-1.5">
-            <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                &copy; {new Date().getFullYear()} Pou Chen Myanmar. Internal Use Only.
+         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col items-center gap-2">
+            <p className={`text-center text-[10px] flex items-center gap-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                <span>&copy; {new Date().getFullYear()} Pou Chen Myanmar.</span>
+                <span className="text-red-600 font-bold text-sm uppercase">Internal Use Only</span>
             </p>
             <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                Developed by <span className="font-semibold">Htet Aung Hlaing (Ting)</span> @ PCM PCAG IT Team
+                Developed by <span className="font-semibold">Htet Aung Hlaing ( ting )</span> @ PCM PCAG IT Team | Powered by Google AI Studio
             </p>
             <p className={`text-center text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                 Contact: <a href="mailto:ting.hah@pouchen.com.mm" className="hover:underline hover:text-blue-500">ting.hah@pouchen.com.mm</a> & <a href="mailto:mpc.erp@pouchen.com.mm" className="hover:underline hover:text-blue-500">mpc.erp@pouchen.com.mm</a>

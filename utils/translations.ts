@@ -28,7 +28,22 @@ export const translations = {
     grandTotal: "Grand Total",
     loadServer: "Load 'data.xlsx'",
     serverFileError: "Failed to load 'data.xlsx'. Please ensure it exists in the project root.",
-    or: "- OR -"
+    or: "- OR -",
+    // Tutorial
+    tutorial: "Tutorial",
+    tutorialTitle: "How to use PMA Nesting",
+    whatIsTitle: "What is PMA Nesting?",
+    whatIsDesc: "PMA Nesting is a specialized tool designed for internal use in Pou Chen Myanmar (Adidas) to streamline the shoe production cutting nesting layout. It allows users to consolidate multiple orders from raw Excel data into a unified size breakdown, calculating total quantities per size and preserving key metadata like color or article numbers.",
+    howToTitle: "Step-by-Step Guide",
+    step1: "1. Data Source",
+    step1Desc: "Upload your Excel file (.xlsx) or load the standard 'data.xlsx' from the server.",
+    step2: "2. Configure Columns",
+    step2Desc: "The tool automatically detects columns. You can manually adjust which columns represent 'Sizes' (to be summed) and which are 'Info' (to be displayed as details).",
+    step3: "3. Select Orders",
+    step3Desc: "Enter the specific Order Numbers (SO Number) you want to consolidate on the left panel. You can add multiple orders.",
+    step4: "4. Generate & Export",
+    step4Desc: "Click 'Generate Nesting' to see the calculated breakdown. Finally, click 'Export Excel' to download the consolidated report.",
+    close: "Close"
   },
   my: {
     appTitle: "PMA Nesting",
@@ -57,7 +72,22 @@ export const translations = {
     grandTotal: "စုစုပေါင်း",
     loadServer: "'data.xlsx' ကို ဖွင့်မည်",
     serverFileError: "'data.xlsx' ရှာမတွေ့ပါ။",
-    or: "- သို့မဟုတ် -"
+    or: "- သို့မဟုတ် -",
+    // Tutorial
+    tutorial: "လမ်းညွှန်",
+    tutorialTitle: "PMA Nesting အသုံးပြုနည်း",
+    whatIsTitle: "PMA Nesting ဆိုတာဘာလဲ",
+    whatIsDesc: "PMA Nesting သည် Pou Chen Myanmar (Adidas) တွင် အတွင်းပိုင်းအသုံးပြုရန်အတွက် ဖိနပ်ထုတ်လုပ်မှု Cutting Nesting Layout လုပ်ငန်းစဉ်ကို လွယ်ကူစေရန် ဒီဇိုင်းထုတ်ထားသော ကိရိယာတစ်ခုဖြစ်သည်။ Excel ဒေတာမှ အော်ဒါအများအပြားကို စုစည်းပြီး ဆိုဒ်အလိုက် စုစုပေါင်းအရေအတွက်များကို တွက်ချက်ပေးပါသည်။",
+    howToTitle: "အဆင့်ဆင့် အသုံးပြုနည်း",
+    step1: "၁. ဒေတာရင်းမြစ်",
+    step1Desc: "သင့် Excel ဖိုင် (.xlsx) ကို တင်ပါ သို့မဟုတ် ဆာဗာမှ 'data.xlsx' ကို ဖွင့်ပါ။",
+    step2: "၂. ကော်လံများ သတ်မှတ်ခြင်း",
+    step2Desc: "ပရိုဂရမ်မှ ကော်လံများကို အလိုအလျောက် ရှာဖွေပေးသည်။ 'ဆိုဒ်' (ပေါင်းထည့်ရမည့်အရာ) နှင့် 'အချက်အလက်' (ပြသရမည့်အရာ) များကို စိတ်ကြိုက် ပြင်ဆင်နိုင်သည်။",
+    step3: "၃. အော်ဒါ ရွေးချယ်ခြင်း",
+    step3Desc: "ဘယ်ဘက်တွင် သင်တွက်ချက်လိုသော အော်ဒါနံပါတ် (SO Number) များကို ထည့်ပါ။ အော်ဒါများစွာ ထည့်သွင်းနိုင်သည်။",
+    step4: "၄. တွက်ချက်ခြင်း နှင့် ထုတ်ယူခြင်း",
+    step4Desc: "'တွက်ချက်မည်' ကိုနှိပ်ပြီး ရလဒ်ကြည့်ပါ။ ထို့နောက် 'Excel သို့ထုတ်ယူမည်' ကိုနှိပ်ပြီး အစီရင်ခံစာ ရယူပါ။",
+    close: "ပိတ်မည်"
   },
   tw: {
     appTitle: "PMA 排版系統",
@@ -86,6 +116,21 @@ export const translations = {
     grandTotal: "總計",
     loadServer: "加載 'data.xlsx'",
     serverFileError: "無法加載 'data.xlsx'，請確認文件是否存在。",
-    or: "- 或 -"
+    or: "- 或 -",
+    // Tutorial
+    tutorial: "使用教學",
+    tutorialTitle: "如何使用 PMA 排版系統",
+    whatIsTitle: "什麼是 PMA Nesting?",
+    whatIsDesc: "PMA Nesting 是專為 Pou Chen Myanmar (Adidas) 內部使用設計的工具，旨在簡化鞋類生產裁剪排版 (Cutting Nesting Layout) 流程。它允許用戶將來自 Excel 原始數據的多個訂單合併為統一的尺寸明細，計算每個尺寸的總數量並保留顏色或貨號等關鍵數據。",
+    howToTitle: "分步指南",
+    step1: "1. 數據源",
+    step1Desc: "上傳您的 Excel 文件 (.xlsx) 或從服務器加載標準的 'data.xlsx'。",
+    step2: "2. 配置列",
+    step2Desc: "工具會自動檢測列。您可以手動調整哪些列代表'尺寸'（需合計）以及哪些是'信息'（僅顯示）。",
+    step3: "3. 選擇訂單",
+    step3Desc: "在左側面板輸入您要合併的具體訂單號 (SO Number)。您可以添加多個訂單。",
+    step4: "4. 生成與匯出",
+    step4Desc: "點擊'生成排版'查看計算細目。最後，點擊'匯出 Excel'下載合併報告。",
+    close: "關閉"
   }
 };
