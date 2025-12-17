@@ -39,18 +39,44 @@ export const translations = {
     duplicateOrderDesc: "Duplicate order numbers detected:",
     // Tutorial
     tutorial: "Tutorial",
-    tutorialTitle: "How to use PMA Nesting",
-    whatIsTitle: "What is PMA Nesting?",
-    whatIsDesc: "PMA Nesting is a specialized tool designed for internal use in Pou Chen Myanmar (Adidas) to streamline the shoe production cutting nesting layout. It allows users to consolidate multiple orders from raw Excel data into a unified size breakdown, calculating total quantities per size and preserving key metadata like color or article numbers.",
+    tutorialTitle: "User Guide",
+    whatIsTitle: "About PMA Nesting",
+    whatIsDesc: "PMA Nesting is a tool built for Pou Chen Myanmar (Adidas) to automate the consolidation of shoe production orders. It takes raw Excel size-run data and merges multiple orders into a single, optimized nesting breakdown, calculating totals while preserving article, model, and color details.",
+    
+    // New Features Section
+    featuresTitle: "Key Features",
+    featuresList: [
+      "Smart Column Detection: Auto-detects Size, Article, Model, and Color columns.",
+      "Custom Configuration: Manually toggle which columns to sum (Size) and which to display (Info).",
+      "Validation: Instantly flags invalid or duplicate SO numbers.",
+      "Dark Mode: Native support for low-light working environments."
+    ],
+
+    // Steps
     howToTitle: "Step-by-Step Guide",
     step1: "1. Data Source",
-    step1Desc: "Upload your Excel file (.xlsx) or load the standard 'data.xlsx' from the server.",
-    step2: "2. Configure Columns",
-    step2Desc: "The tool automatically detects columns. You can manually adjust which columns represent 'Sizes' (to be summed) and which are 'Info' (to be displayed as details).",
+    step1Desc: "Upload your daily size-run Excel file (.xlsx). You can also load 'data.xlsx' from the server if configured. Ensure the file has a header row with 'Order No'.",
+    step2: "2. Column Configuration",
+    step2Desc: "A configuration panel will appear. Check the boxes for columns containing Quantities (Sizes) and select additional metadata columns (like Color/Article) to display in the report.",
     step3: "3. Select Orders",
-    step3Desc: "Enter the specific Order Numbers (SO Number) you want to consolidate on the left panel. You can add multiple orders.",
+    step3Desc: "On the left panel, type or paste the SO Numbers you wish to combine. Use the '+ Add' button for more rows. The system will validate them against the uploaded file immediately.",
     step4: "4. Generate & Export",
-    step4Desc: "Click 'Generate Nesting' to see the calculated breakdown. Finally, click 'Export Excel' to download the consolidated report.",
+    step4Desc: "Click 'Generate Nesting' to process the data. Review the 'Qty Per Order' and 'Grand Total'. Finally, click 'Export Excel' to download the formatted PMA_Nesting_Result.xlsx.",
+
+    // Troubleshooting
+    notesTitle: "Notes & Troubleshooting",
+    notesList: [
+      "File Format: Only standard .xlsx files are supported.",
+      "Errors: 'Invalid Order' means the typed number doesn't match the file exactly (check spaces).",
+      "Empty Result: If the Grand Total is 0, check your Column Configuration to ensure Size columns are selected."
+    ],
+
+    // Dev Note
+    devNoteTitle: "Developer Note",
+    devNote1: "1. Used Google Ai Studio to build this tool.",
+    devNote2: "2. Repo at git hub",
+    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+    
     close: "Close"
   },
   my: {
@@ -89,20 +115,43 @@ export const translations = {
     invalidOrderTip: "Space (သို့) အထူးပြုလုပ်ချက်များကို ဖယ်ရှားပြီး နောက်ဆုံးရ Size-run ဖိုင်ကို တင်ထားကြောင်း သေချာပါစေ။",
     duplicateOrderTitle: "အော်ဒါနံပါတ် ထပ်နေပါသည်",
     duplicateOrderDesc: "အောက်ပါ အော်ဒါနံပါတ်များ ထပ်နေပါသည်:",
+    
     // Tutorial
     tutorial: "လမ်းညွှန်",
-    tutorialTitle: "PMA Nesting အသုံးပြုနည်း",
-    whatIsTitle: "PMA Nesting ဆိုတာဘာလဲ",
-    whatIsDesc: "PMA Nesting သည် Pou Chen Myanmar (Adidas) တွင် အတွင်းပိုင်းအသုံးပြုရန်အတွက် ဖိနပ်ထုတ်လုပ်မှု Cutting Nesting Layout လုပ်ငန်းစဉ်ကို လွယ်ကူစေရန် ဒီဇိုင်းထုတ်ထားသော ကိရိယာတစ်ခုဖြစ်သည်။ Excel ဒေတာမှ အော်ဒါအများအပြားကို စုစည်းပြီး ဆိုဒ်အလိုက် စုစုပေါင်းအရေအတွက်များကို တွက်ချက်ပေးပါသည်။",
+    tutorialTitle: "အသုံးပြုပုံ လမ်းညွှန်",
+    whatIsTitle: "PMA Nesting အကြောင်း",
+    whatIsDesc: "PMA Nesting သည် Pou Chen Myanmar (Adidas) အတွက် ဖိနပ်ထုတ်လုပ်မှု အော်ဒါများကို စုစည်းရန် တည်ဆောက်ထားသော ကိရိယာဖြစ်သည်။ Excel ဒေတာမှ အော်ဒါအများအပြားကို စုစည်းပြီး ဆိုဒ်အလိုက် စုစုပေါင်းအရေအတွက်များကို တွက်ချက်ပေးပါသည်။",
+    
+    featuresTitle: "အဓိက အင်္ဂါရပ်များ",
+    featuresList: [
+      "ကော်လံများကို အလိုအလျောက် သိရှိနိုင်ခြင်း (Size, Article, Model, Color)",
+      "စိတ်ကြိုက် ပြင်ဆင်နိုင်ခြင်း (တွက်ချက်လိုသော ဆိုဒ်ကော်လံများကို ရွေးချယ်နိုင်သည်)",
+      "အော်ဒါနံပါတ် မှားယွင်းမှုများကို ချက်ချင်း စစ်ဆေးပေးခြင်း",
+      "Dark Mode စနစ် ပါဝင်ခြင်း"
+    ],
+
     howToTitle: "အဆင့်ဆင့် အသုံးပြုနည်း",
     step1: "၁. ဒေတာရင်းမြစ်",
-    step1Desc: "သင့် Excel ဖိုင် (.xlsx) ကို တင်ပါ သို့မဟုတ် ဆာဗာမှ 'data.xlsx' ကို ဖွင့်ပါ။",
+    step1Desc: "Excel ဖိုင် (.xlsx) ကို တင်ပါ။ သို့မဟုတ် ဆာဗာမှ 'data.xlsx' ကို ဖွင့်ပါ။ ဖိုင်ခေါင်းစဉ်တွင် 'Order No' ပါဝင်ရပါမည်။",
     step2: "၂. ကော်လံများ သတ်မှတ်ခြင်း",
-    step2Desc: "ပရိုဂရမ်မှ ကော်လံများကို အလိုအလျောက် ရှာဖွေပေးသည်။ 'ဆိုဒ်' (ပေါင်းထည့်ရမည့်အရာ) နှင့် 'အချက်အလက်' (ပြသရမည့်အရာ) များကို စိတ်ကြိုက် ပြင်ဆင်နိုင်သည်။",
+    step2Desc: "Setting box ပေါ်လာပါမည်။ 'Sizes' (အရေအတွက်) ကော်လံများနှင့် အစီရင်ခံစာတွင် ပြလိုသော အချက်အလက် (Info) ကော်လံများကို အမှန်ခြစ် ရွေးချယ်ပါ။",
     step3: "၃. အော်ဒါ ရွေးချယ်ခြင်း",
-    step3Desc: "ဘယ်ဘက်တွင် သင်တွက်ချက်လိုသော အော်ဒါနံပါတ် (SO Number) များကို ထည့်ပါ။ အော်ဒါများစွာ ထည့်သွင်းနိုင်သည်။",
+    step3Desc: "ဘယ်ဘက်တွင် လိုချင်သော အော်ဒါနံပါတ် (SO Number) များကို ရိုက်ထည့်ပါ။ '+ Add' ကိုနှိပ်၍ အော်ဒါများ ထပ်ထည့်နိုင်သည်။",
     step4: "၄. တွက်ချက်ခြင်း နှင့် ထုတ်ယူခြင်း",
-    step4Desc: "'တွက်ချက်မည်' ကိုနှိပ်ပြီး ရလဒ်ကြည့်ပါ။ ထို့နောက် 'Excel သို့ထုတ်ယူမည်' ကိုနှိပ်ပြီး အစီရင်ခံစာ ရယူပါ။",
+    step4Desc: "'Generate Nesting' ကိုနှိပ်ပါ။ ရလဒ်များကို စစ်ဆေးပြီး 'Export Excel' ကိုနှိပ်၍ ဖိုင်ရယူပါ။",
+
+    notesTitle: "မှတ်ချက်များ",
+    notesList: [
+      ".xlsx ဖိုင်များကိုသာ အသုံးပြုနိုင်သည်။",
+      "'Invalid Order' ပြလျှင် စာလုံးပေါင်း သို့မဟုတ် Space များကို ပြန်စစ်ပါ။",
+      "စုစုပေါင်း ၀ ဖြစ်နေလျှင် ကော်လံသတ်မှတ်ချက်တွင် Size များကို ရွေးထားခြင်း ရှိမရှိ ပြန်စစ်ပါ။"
+    ],
+
+    devNoteTitle: "Developer မှတ်ချက်",
+    devNote1: "1. Used Google Ai Studio to build this tool.",
+    devNote2: "2. Repo at git hub",
+    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+
     close: "ပိတ်မည်"
   },
   tw: {
@@ -141,20 +190,43 @@ export const translations = {
     invalidOrderTip: "請刪除空格或特殊字符，並確保已上傳最新的 Size-run 文件。",
     duplicateOrderTitle: "檢測到重複訂單",
     duplicateOrderDesc: "重複的訂單編號：",
+    
     // Tutorial
     tutorial: "使用教學",
-    tutorialTitle: "如何使用 PMA 排版系統",
-    whatIsTitle: "什麼是 PMA Nesting?",
-    whatIsDesc: "PMA Nesting 是專為 Pou Chen Myanmar (Adidas) 內部使用設計的工具，旨在簡化鞋類生產裁剪排版 (Cutting Nesting Layout) 流程。它允許用戶將來自 Excel 原始數據的多個訂單合併為統一的尺寸明細，計算每個尺寸的總數量並保留顏色或貨號等關鍵數據。",
-    howToTitle: "分步指南",
+    tutorialTitle: "使用指南",
+    whatIsTitle: "關於 PMA Nesting",
+    whatIsDesc: "PMA Nesting 是專為 Pou Chen Myanmar (Adidas) 開發的工具，用於自動合併鞋類生產訂單。它能將原始 Excel 數據中的多個訂單合併為單一的排版明細，自動計算總數並保留貨號、鞋型和顏色等詳細信息。",
+    
+    featuresTitle: "主要功能",
+    featuresList: [
+      "智慧欄位偵測：自動識別尺寸、貨號、型體和顏色欄位。",
+      "自定義配置：可手動勾選需要加總的尺寸欄位和需要顯示的資訊欄位。",
+      "即時驗證：立即標記無效或重複的訂單編號。",
+      "深色模式：支援低光源環境操作。"
+    ],
+
+    howToTitle: "分步操作指南",
     step1: "1. 數據源",
-    step1Desc: "上傳您的 Excel 文件 (.xlsx) 或從服務器加載標準的 'data.xlsx'。",
-    step2: "2. 配置列",
-    step2Desc: "工具會自動檢測列。您可以手動調整哪些列代表'尺寸'（需合計）以及哪些是'信息'（僅顯示）。",
+    step1Desc: "上傳您的 Excel 文件 (.xlsx) 或加載服務器上的 'data.xlsx'。請確保文件包含帶有 'Order No' 的標題行。",
+    step2: "2. 配置欄位",
+    step2Desc: "系統會彈出配置面板。請勾選包含數量 (Sizes) 的欄位，並選擇需要在報告中顯示的其他資訊 (如顏色/貨號)。",
     step3: "3. 選擇訂單",
-    step3Desc: "在左側面板輸入您要合併的具體訂單號 (SO Number)。您可以添加多個訂單。",
+    step3Desc: "在左側面板輸入您要合併的訂單號 (SO Number)。使用 '+ Add' 按鈕添加更多行。系統會即時驗證號碼。",
     step4: "4. 生成與匯出",
-    step4Desc: "點擊'生成排版'查看計算細目。最後，點擊'匯出 Excel'下載合併報告。",
+    step4Desc: "點擊 'Generate Nesting' 進行計算。確認結果無誤後，點擊 'Export Excel' 下載 PMA_Nesting_Result.xlsx。",
+
+    notesTitle: "注意事項與故障排除",
+    notesList: [
+      "文件格式：僅支援標準 .xlsx 文件。",
+      "錯誤提示：若顯示 'Invalid Order'，請檢查輸入號碼是否有空格或拼寫錯誤。",
+      "結果為空：如果總計為 0，請檢查配置步驟中是否正確勾選了尺寸欄位。"
+    ],
+
+    devNoteTitle: "開發者註釋",
+    devNote1: "1. Used Google Ai Studio to build this tool.",
+    devNote2: "2. Repo at git hub",
+    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+
     close: "關閉"
   }
 };

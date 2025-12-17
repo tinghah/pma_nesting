@@ -126,7 +126,7 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         {/* Metric Box: Per Order Breakdown & Grand Total */}
         
         {/* 1. Per Order List Section (Priority: First) */}
-        <div className="flex-1 p-4 bg-gray-50/50 dark:bg-slate-800/50 flex flex-col border-b md:border-b-0 md:border-r border-gray-100 dark:border-slate-700">
+        <div className={`flex-1 p-4 flex flex-col border-b md:border-b-0 md:border-r ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-gray-50/50 border-gray-100'}`}>
              <div className="flex items-center gap-2 mb-2">
                 <List className={`w-3.5 h-3.5 ${isDark ? 'text-blue-400' : 'text-gray-400'}`} />
                 <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
@@ -147,9 +147,9 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         </div>
 
         {/* 2. Grand Total Section (Priority: Second) */}
-        <div className={`p-4 flex flex-col justify-center min-w-[180px] border-b md:border-b-0 md:border-r bg-white dark:bg-slate-800 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+        <div className={`p-4 flex flex-col justify-center min-w-[180px] border-b md:border-b-0 md:border-r ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
             <div className="flex items-center gap-2 mb-1">
-                <div className="p-1.5 bg-blue-100 rounded text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <div className={`p-1.5 rounded ${isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
                     <PieChart className="w-4 h-4" />
                 </div>
                 <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -165,7 +165,7 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         </div>
 
         {/* Right: Big Action Button */}
-        <div className="p-3 md:w-auto w-full flex items-center justify-center bg-gray-50 dark:bg-slate-800/50">
+        <div className={`p-3 md:w-auto w-full flex items-center justify-center ${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
            <button 
              onClick={exportToExcel}
              className="w-full md:w-auto h-full min-h-[50px] px-6 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow transition-all transform active:scale-95 group"
@@ -187,12 +187,12 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
           
           {/* Legend for Extras if they exist */}
           {result.infoColumns.length > 0 && (
-             <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400 hidden sm:flex">
+             <div className={`flex items-center gap-2 text-[10px] hidden sm:flex ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                 <span>Info:</span>
                 {result.infoColumns
                   .filter(c => c !== result.articleHeader && c !== result.modelHeader && c !== result.colorHeader)
                   .map(col => (
-                    <span key={col} className="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-slate-700 dark:text-slate-300">{col}</span>
+                    <span key={col} className={`px-1.5 py-0.5 rounded ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-200 text-gray-700'}`}>{col}</span>
                 ))}
              </div>
           )}

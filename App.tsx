@@ -28,13 +28,19 @@ const App: React.FC = () => {
     if (savedTheme) setIsDark(savedTheme === 'true');
   }, []);
 
-  // Persist UI preferences
+  // Persist UI preferences and apply dark mode class
   useEffect(() => {
     localStorage.setItem(LANG_KEY, language);
   }, [language]);
 
   useEffect(() => {
     localStorage.setItem(THEME_KEY, String(isDark));
+    // Apply class to document element for Tailwind 'class' mode
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [isDark]);
 
   // Load from localStorage on mount
