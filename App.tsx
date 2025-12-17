@@ -99,17 +99,23 @@ const App: React.FC = () => {
     });
 
     // Initialize map structure: 
-    // Size -> { totalQty, orders: Map<orderNo, { qty, extras }> }
-    // Note: If multiple rows exist for same order (split shipments?), we sum qty.
-    // Extras are currently taken from the *last* seen row for that order/size combo.
+    // Size -> { totalQty, orders: Map<orderNo, { qty, extras }>, articles: Set, models: Set, colors: Set }
     const sizeDataMap = new Map<string, { 
         total: number, 
-        orders: Map<string, { qty: number, extras: Record<string, string | number> }> 
+        orders: Map<string, { qty: number, extras: Record<string, string | number> }>,
+        articles: Set<string>,
+        models: Set<string>,
+        colors: Set<string>
     }>();
 
     data.sizeColumns.forEach(size => {
-        sizeDataMap.set(size, { total: 0, orders: new Map() });
+        sizeDataMap.set(size, { total: 0, orders: new Map(), articles: new Set(), models: new Set(), colors: new Set() });
     });
+
+    // Track Global Distincts
+    const globalArticles = new Set<string>();
+    const globalModels = new Set<string>();
+    const globalColors = new Set<string>();
 
     // Calculate sums
     filteredRows.forEach(row => {
@@ -126,6 +132,15 @@ const App: React.FC = () => {
             });
         }
         
+        // Capture Article, Model and Color if they exist
+        const rowArticle = data.articleHeader ? String(row[data.articleHeader] || '').trim() : '';
+        const rowModel = data.modelHeader ? String(row[data.modelHeader] || '').trim() : '';
+        const rowColor = data.colorHeader ? String(row[data.colorHeader] || '').trim() : '';
+
+        if (rowArticle) globalArticles.add(rowArticle);
+        if (rowModel) globalModels.add(rowModel);
+        if (rowColor) globalColors.add(rowColor);
+
         data.sizeColumns.forEach(size => {
             const val = row[size];
             let numVal = 0;
@@ -148,6 +163,11 @@ const App: React.FC = () => {
                     currentOrderData.extras = { ...currentOrderData.extras, ...rowExtras };
                     
                     entry.orders.set(soNum, currentOrderData);
+                    
+                    // Add distincts for this size
+                    if (rowArticle) entry.articles.add(rowArticle);
+                    if (rowModel) entry.models.add(rowModel);
+                    if (rowColor) entry.colors.add(rowColor);
                 }
             }
         });
@@ -166,7 +186,10 @@ const App: React.FC = () => {
         return {
             size,
             qty: entry.total,
-            orderBreakdown
+            orderBreakdown,
+            articles: Array.from(entry.articles),
+            models: Array.from(entry.models),
+            colors: Array.from(entry.colors)
         };
     }).filter(item => item.qty > 0); 
 
@@ -175,7 +198,13 @@ const App: React.FC = () => {
     setNestingResult({ 
         totalQty, 
         breakdown,
-        infoColumns: data.infoColumns || []
+        infoColumns: data.infoColumns || [],
+        articleHeader: data.articleHeader,
+        modelHeader: data.modelHeader,
+        colorHeader: data.colorHeader,
+        summaryArticles: Array.from(globalArticles),
+        summaryModels: Array.from(globalModels),
+        summaryColors: Array.from(globalColors)
     });
   };
 

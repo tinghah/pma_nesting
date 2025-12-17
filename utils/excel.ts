@@ -73,7 +73,7 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
             const lowerH = h.toLowerCase();
 
             // Always exclude specific metadata
-            if (['total', 'qty', 'order', 'so_number', 'po', 'article'].some(ex => lowerH.includes(ex))) return false;
+            if (['total', 'qty', 'order', 'so_number', 'po', 'article', 'model', 'color', 'colour', '型號', '型體', '顏色', '色名'].some(ex => lowerH.includes(ex))) return false;
 
             // Include if it looks like a size
             const hasChinese = /[\u4e00-\u9fff]/.test(h);
@@ -94,12 +94,20 @@ export const parseExcelFile = async (file: File): Promise<ProcessedData> => {
             .map(String)
         ));
 
+        // Auto-detect Article, Model and Color columns
+        const articleHeader = cleanHeaders.find(h => /Article|型號/i.test(h));
+        const modelHeader = cleanHeaders.find(h => /Model|型體名稱/i.test(h));
+        const colorHeader = cleanHeaders.find(h => /Color|Colour|顏色|色名/i.test(h));
+
         resolve({
             headers: cleanHeaders,
             rows,
-            sizeColumns: suggestedSizeColumns, // These are just suggestions now
-            infoColumns: [], // Default to none, let user choose
-            soNumbers
+            sizeColumns: suggestedSizeColumns, 
+            infoColumns: [], // Default to none, let user choose (heuristics in FileUploader will pre-select article/model/color)
+            soNumbers,
+            articleHeader,
+            modelHeader,
+            colorHeader
         });
 
       } catch (error) {

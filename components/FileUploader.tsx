@@ -66,7 +66,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       // Initialize configuration state with heuristics
       setPendingData(data);
       setSelectedSizeCols(new Set(data.sizeColumns));
-      setSelectedInfoCols(new Set()); // Default empty
+
+      // Auto-select Article, Model, and Color columns if detected
+      const initialInfoCols = new Set<string>();
+      if (data.articleHeader) initialInfoCols.add(data.articleHeader);
+      if (data.modelHeader) initialInfoCols.add(data.modelHeader);
+      if (data.colorHeader) initialInfoCols.add(data.colorHeader);
+      
+      setSelectedInfoCols(initialInfoCols);
       
       if (!customName) {
         setCustomName(file.name.replace(/\.xlsx?$/, ''));
@@ -211,14 +218,21 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                     <div className="max-h-[100px] overflow-y-auto custom-scrollbar border rounded p-2 grid grid-cols-1 gap-2 bg-gray-50/50 dark:bg-slate-900/50 dark:border-slate-700">
                         {pendingData.headers.filter(h => h !== 'SO_Number' && !selectedSizeCols.has(h)).map(h => {
                              const isChecked = selectedInfoCols.has(h);
+                             const isAutoDetected = (pendingData.articleHeader === h || pendingData.modelHeader === h || pendingData.colorHeader === h);
+                             
                              return (
                                  <label key={`info-${h}`} className="flex items-center gap-2 cursor-pointer group">
                                      <div onClick={() => toggleInfoCol(h)} className={`flex-shrink-0 ${isChecked ? 'text-emerald-600' : 'text-gray-300 dark:text-slate-600'}`}>
                                          {isChecked ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                                      </div>
-                                     <span className={`text-xs truncate select-none ${isChecked ? (isDark ? 'text-white' : 'text-gray-900') : (isDark ? 'text-slate-500' : 'text-gray-500')}`}>
-                                        {h}
-                                     </span>
+                                     <div className="flex items-center gap-2 min-w-0">
+                                         <span className={`text-xs truncate select-none ${isChecked ? (isDark ? 'text-white' : 'text-gray-900') : (isDark ? 'text-slate-500' : 'text-gray-500')}`}>
+                                            {h}
+                                         </span>
+                                         {isAutoDetected && (
+                                            <span className="text-[9px] bg-blue-100 text-blue-700 px-1 rounded dark:bg-blue-900 dark:text-blue-300">Auto</span>
+                                         )}
+                                     </div>
                                  </label>
                              );
                         })}

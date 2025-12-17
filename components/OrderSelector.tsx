@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Minus, Search, Trash2, ArrowRight } from 'lucide-react';
 import { ProcessedData } from '../types';
 import { Language, translations } from '../utils/translations';
@@ -13,6 +13,18 @@ interface OrderSelectorProps {
 const OrderSelector: React.FC<OrderSelectorProps> = ({ data, onGenerate, lang, isDark }) => {
   const t = translations[lang];
   const [inputs, setInputs] = useState<string[]>(Array(3).fill(''));
+  
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const prevLengthRef = useRef(inputs.length);
+
+  // Focus the new input when a field is added
+  useEffect(() => {
+    if (inputs.length > prevLengthRef.current) {
+      const lastIndex = inputs.length - 1;
+      inputRefs.current[lastIndex]?.focus();
+    }
+    prevLengthRef.current = inputs.length;
+  }, [inputs.length]);
   
   const addInput = () => setInputs([...inputs, '']);
   const removeInput = () => {
@@ -32,6 +44,19 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({ data, onGenerate, lang, i
   const handleGenerate = () => {
     const validOrders = inputs.map(i => i.trim()).filter(Boolean);
     onGenerate(validOrders);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (index < inputs.length - 1) {
+        // Move to next existing input
+        inputRefs.current[index + 1]?.focus();
+      } else {
+        // Add new input
+        addInput();
+      }
+    }
   };
 
   const totalOrders = data?.soNumbers.length || 0;
@@ -58,10 +83,12 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({ data, onGenerate, lang, i
                     {index + 1}
                 </span>
                 <input
+                ref={el => { inputRefs.current[index] = el; }}
                 type="text"
                 value={value}
                 disabled={!data}
                 onChange={(e) => handleInputChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
                 placeholder={data ? "SO Number..." : "-"}
                 className={`
                     block w-full rounded shadow-sm text-sm py-1.5 px-2.5 border outline-none

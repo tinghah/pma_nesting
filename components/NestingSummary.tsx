@@ -27,27 +27,52 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
     );
   }
 
+  const hasArticle = !!result.articleHeader;
+  const hasModel = !!result.modelHeader;
+  const hasColor = !!result.colorHeader;
+
   const exportToExcel = () => {
     if (!result) return;
     const wb = XLSX.utils.book_new();
     
     // Header Row
-    const headers = ["Size", "Total Qty", "Order Details"];
+    const headers = ["Size", "Total Qty"];
+    if (hasArticle) headers.push(result.articleHeader!);
+    if (hasModel) headers.push(result.modelHeader!);
+    if (hasColor) headers.push(result.colorHeader!);
+    headers.push("Order Details");
 
     const wsData = [
       headers,
       ...result.breakdown.map(item => {
+        const row = [item.size, item.qty];
+        if (hasArticle) row.push(item.articles.join('/'));
+        if (hasModel) row.push(item.models.join('/'));
+        if (hasColor) row.push(item.colors.join('/'));
+
         const details = item.orderBreakdown.map(b => {
             let str = `${b.orderNo}:${b.qty}`;
+            // Optional: Filter out Article/Model/Color from extras string since they are now columns
             if (b.extraInfo && Object.keys(b.extraInfo).length > 0) {
-                const extras = Object.values(b.extraInfo).join('/');
-                str += ` (${extras})`;
+                const extras = Object.entries(b.extraInfo)
+                    .filter(([k]) => k !== result.articleHeader && k !== result.modelHeader && k !== result.colorHeader)
+                    .map(([_, v]) => v)
+                    .join('/');
+                if (extras) str += ` (${extras})`;
             }
             return str;
         }).join(', ');
-        return [item.size, item.qty, details];
+        row.push(details);
+        return row;
       }),
-      ["Total", result.totalQty, ""]
+      [
+        "Total", 
+        result.totalQty, 
+        hasArticle ? result.summaryArticles.join('/') : "", 
+        hasModel ? result.summaryModels.join('/') : "", 
+        hasColor ? result.summaryColors.join('/') : "",
+        ""
+      ]
     ];
     
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -56,13 +81,20 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
     const wscols = [
         { wch: 10 }, // Size
         { wch: 12 }, // Total Qty
-        { wch: 100 } // Details
     ];
+    if (hasArticle) wscols.push({ wch: 15 });
+    if (hasModel) wscols.push({ wch: 15 });
+    if (hasColor) wscols.push({ wch: 15 });
+    wscols.push({ wch: 100 }); // Order Details
+
     ws['!cols'] = wscols;
 
     XLSX.utils.book_append_sheet(wb, ws, "Nesting Summary");
     XLSX.writeFile(wb, "PMA_Nesting_Summary.xlsx");
   };
+
+  const borderColor = isDark ? 'border-slate-600' : 'border-gray-300';
+  const headerBg = isDark ? 'bg-slate-700' : 'bg-gray-100';
 
   return (
     <div className="space-y-4 h-full flex flex-col">
@@ -109,8 +141,10 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
           {/* Legend for Extras if they exist */}
           {result.infoColumns.length > 0 && (
              <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400">
-                <span>Showing:</span>
-                {result.infoColumns.map(col => (
+                <span>Info:</span>
+                {result.infoColumns
+                  .filter(c => c !== result.articleHeader && c !== result.modelHeader && c !== result.colorHeader)
+                  .map(col => (
                     <span key={col} className="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-slate-700 dark:text-slate-300">{col}</span>
                 ))}
              </div>
@@ -118,32 +152,82 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         </div>
         
         <div className="flex-1 overflow-auto custom-scrollbar">
-          <table className={`min-w-full divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-200'}`}>
-            <thead className={`sticky top-0 z-10 ${isDark ? 'bg-slate-700' : 'bg-gray-50'}`}>
+          <table className={`min-w-full border-collapse`}>
+            <thead className={`sticky top-0 z-10 ${headerBg}`}>
               <tr>
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.size}
                 </th>
-                <th scope="col" className={`px-6 py-3 text-right text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
+                <th scope="col" className={`px-6 py-3 text-right text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.qty}
                 </th>
-                {/* Replaced % Share with Order Details */}
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider w-1/2 ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
+                {hasArticle && (
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        Article
+                    </th>
+                )}
+                {hasModel && (
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        Model
+                    </th>
+                )}
+                {hasColor && (
+                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        Colour
+                    </th>
+                )}
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider w-1/2 border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.orderDetails}
                 </th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${isDark ? 'divide-slate-700 bg-slate-800' : 'divide-gray-100 bg-white'}`}>
+            <tbody className={`${isDark ? 'bg-slate-800' : 'bg-white'}`}>
               {result.breakdown.map((item, idx) => {
+                // Color Logic: 
+                // Article/Model/Color: If all selected orders for this size share 1 value -> Green. Else -> Red.
+                const articleColor = item.articles.length === 1 
+                    ? (isDark ? 'text-green-400' : 'text-green-600') 
+                    : (isDark ? 'text-red-400' : 'text-red-600');
+                
+                const modelColor = item.models.length === 1 
+                    ? (isDark ? 'text-green-400' : 'text-green-600') 
+                    : (isDark ? 'text-red-400' : 'text-red-600');
+                
+                const colorColor = item.colors.length === 1 
+                    ? (isDark ? 'text-green-400' : 'text-green-600') 
+                    : (isDark ? 'text-red-400' : 'text-red-600');
+
                 return (
                   <tr key={item.size} className={`transition-colors ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'}`}>
-                    <td className={`px-6 py-3 whitespace-nowrap text-sm font-medium border-r border-transparent ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-3 whitespace-nowrap text-sm font-medium border ${borderColor} ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
                       {item.size}
                     </td>
-                    <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-mono font-semibold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                    <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-mono font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                       {item.qty}
                     </td>
-                     <td className="px-6 py-3 text-sm">
+                    
+                    {/* Article Column */}
+                    {hasArticle && (
+                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${articleColor}`}>
+                            {item.articles.join('/')}
+                        </td>
+                    )}
+
+                    {/* Model Column */}
+                    {hasModel && (
+                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${modelColor}`}>
+                            {item.models.join('/')}
+                        </td>
+                    )}
+
+                    {/* Color Column */}
+                    {hasColor && (
+                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${colorColor}`}>
+                            {item.colors.join('/')}
+                        </td>
+                    )}
+
+                     <td className={`px-6 py-3 text-sm border ${borderColor}`}>
                         <div className="flex flex-wrap gap-2">
                            {item.orderBreakdown.map((detail, dIdx) => (
                                <div 
@@ -153,10 +237,12 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
                                    <span className="opacity-70 mr-1">{detail.orderNo}:</span>
                                    <span className={`${isDark ? 'text-white' : 'text-black'} font-mono`}>{detail.qty}</span>
                                    
-                                   {/* Render Extra Info */}
+                                   {/* Render Extra Info excluding Article/Model/Color */}
                                    {detail.extraInfo && Object.keys(detail.extraInfo).length > 0 && (
                                        <span className={`ml-2 pl-2 border-l ${isDark ? 'border-slate-500 text-emerald-400' : 'border-gray-300 text-emerald-600'} flex gap-1`}>
-                                           {Object.values(detail.extraInfo).map((val, vIdx) => (
+                                           {Object.entries(detail.extraInfo)
+                                              .filter(([k]) => k !== result.articleHeader && k !== result.modelHeader && k !== result.colorHeader)
+                                              .map(([_, val], vIdx) => (
                                                <span key={vIdx} className="max-w-[100px] truncate">{val}</span>
                                            ))}
                                        </span>
@@ -169,11 +255,26 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
                 );
               })}
             </tbody>
-            <tfoot className={`sticky bottom-0 z-10 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] ${isDark ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-200'}`}>
+            <tfoot className={`sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] ${isDark ? 'bg-slate-700' : 'bg-gray-50'}`}>
                 <tr>
-                    <td className={`px-6 py-3 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.grandTotal}</td>
-                    <td className={`px-6 py-3 text-sm text-right font-mono font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{result.totalQty}</td>
-                    <td className="px-6 py-3"></td>
+                    <td className={`px-6 py-3 text-sm font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.grandTotal}</td>
+                    <td className={`px-6 py-3 text-sm text-right font-mono font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{result.totalQty}</td>
+                    {hasArticle && (
+                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                            {result.summaryArticles.join(' / ')}
+                        </td>
+                    )}
+                    {hasModel && (
+                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                            {result.summaryModels.join(' / ')}
+                        </td>
+                    )}
+                    {hasColor && (
+                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                            {result.summaryColors.join(' / ')}
+                        </td>
+                    )}
+                    <td className={`px-6 py-3 border ${borderColor}`}></td>
                 </tr>
             </tfoot>
           </table>

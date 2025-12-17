@@ -8,6 +8,9 @@ export interface ProcessedData {
   sizeColumns: string[]; // Columns treated as numeric quantities
   infoColumns: string[]; // Columns treated as metadata (e.g., Color, Gender)
   soNumbers: string[];
+  articleHeader?: string; // Automatically detected Article column
+  modelHeader?: string;   // Automatically detected Model column
+  colorHeader?: string;   // Automatically detected Color column
 }
 
 export interface SavedDataset extends ProcessedData {
@@ -26,10 +29,19 @@ export interface SizeSummary {
   size: string;
   qty: number;
   orderBreakdown: OrderBreakdownItem[];
+  articles: string[]; // Unique articles found for this size
+  models: string[];   // Unique models found for this size
+  colors: string[];   // Unique colors found for this size
 }
 
 export interface NestingResult {
   totalQty: number;
   breakdown: SizeSummary[];
   infoColumns: string[]; // Pass this through to the result for display purposes
+  articleHeader?: string;
+  modelHeader?: string;
+  colorHeader?: string;
+  summaryArticles: string[]; // Grand total distinct articles
+  summaryModels: string[];   // Grand total distinct models
+  summaryColors: string[];   // Grand total distinct colors
 }
