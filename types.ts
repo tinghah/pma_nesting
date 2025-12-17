@@ -36,6 +36,7 @@ export interface SizeSummary {
 
 export interface NestingResult {
   totalQty: number;
+  orderTotals: { orderNo: string; qty: number }[]; // New: Total quantity per order
   breakdown: SizeSummary[];
   infoColumns: string[]; // Pass this through to the result for display purposes
   articleHeader?: string;

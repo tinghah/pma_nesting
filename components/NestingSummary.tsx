@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Layers, PieChart } from 'lucide-react';
+import { Download, Layers, PieChart, List } from 'lucide-react';
 import { NestingResult } from '../types';
 import { Language, translations } from '../utils/translations';
 import * as XLSX from 'xlsx';
@@ -35,7 +35,9 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
     if (!result) return;
     const wb = XLSX.utils.book_new();
     
-    // Header Row
+    // ----------------------------
+    // SHEET 1: Nesting Breakdown
+    // ----------------------------
     const headers = ["Size", "Total Qty"];
     if (hasArticle) headers.push(result.articleHeader!);
     if (hasModel) headers.push(result.modelHeader!);
@@ -51,8 +53,7 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         if (hasColor) row.push(item.colors.join('/'));
 
         const details = item.orderBreakdown.map(b => {
-            let str = `${b.orderNo}:${b.qty}`;
-            // Optional: Filter out Article/Model/Color from extras string since they are now columns
+            let str = `${b.orderNo}: ${b.qty}`;
             if (b.extraInfo && Object.keys(b.extraInfo).length > 0) {
                 const extras = Object.entries(b.extraInfo)
                     .filter(([k]) => k !== result.articleHeader && k !== result.modelHeader && k !== result.colorHeader)
@@ -66,7 +67,7 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
         return row;
       }),
       [
-        "Total", 
+        "Grand Total", 
         result.totalQty, 
         hasArticle ? result.summaryArticles.join('/') : "", 
         hasModel ? result.summaryModels.join('/') : "", 
@@ -89,46 +90,90 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
 
     ws['!cols'] = wscols;
 
-    XLSX.utils.book_append_sheet(wb, ws, "Nesting Summary");
-    XLSX.writeFile(wb, "PMA_Nesting_Summary.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Nesting Breakdown");
+
+    // ----------------------------
+    // SHEET 2: Order Summary
+    // ----------------------------
+    const summaryHeaders = ["Order Number", "Total Quantity"];
+    const summaryData: (string | number)[][] = [summaryHeaders];
+    
+    result.orderTotals.forEach(ot => {
+        summaryData.push([ot.orderNo, ot.qty]);
+    });
+
+    // Spacer
+    summaryData.push([]);
+    summaryData.push(["Grand Total", result.totalQty]);
+
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+    wsSummary['!cols'] = [{ wch: 25 }, { wch: 15 }];
+    
+    XLSX.utils.book_append_sheet(wb, wsSummary, "Order Summary");
+
+    XLSX.writeFile(wb, "PMA_Nesting_Result.xlsx");
   };
 
   const borderColor = isDark ? 'border-slate-600' : 'border-gray-300';
   const headerBg = isDark ? 'bg-slate-700' : 'bg-gray-100';
+  const orderCount = result.orderTotals.length;
 
   return (
     <div className="space-y-4 h-full flex flex-col">
-      {/* Compact & Attractive Header Panel */}
-      <div className={`rounded-xl shadow-md border overflow-hidden flex flex-col sm:flex-row ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+      {/* Metrics & Action Panel */}
+      <div className={`rounded-xl shadow-md border overflow-hidden flex flex-col md:flex-row ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
         
-        {/* Left: Total Quantity Metric */}
-        <div className="flex-1 px-6 py-4 flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-100 dark:border-slate-700">
-           <div className="flex items-center gap-2 mb-1">
-              <div className="p-1.5 bg-blue-100 rounded text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                <PieChart className="w-4 h-4" />
-              </div>
-              <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                {t.totalQty}
-              </span>
-           </div>
-           <div className="flex items-baseline gap-2">
-             <span className={`text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-               {result.totalQty.toLocaleString()}
-             </span>
-             <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{t.pairs}</span>
-           </div>
+        {/* Metric Box: Per Order Breakdown & Grand Total */}
+        
+        {/* 1. Per Order List Section (Priority: First) */}
+        <div className="flex-1 p-4 bg-gray-50/50 dark:bg-slate-800/50 flex flex-col border-b md:border-b-0 md:border-r border-gray-100 dark:border-slate-700">
+             <div className="flex items-center gap-2 mb-2">
+                <List className={`w-3.5 h-3.5 ${isDark ? 'text-blue-400' : 'text-gray-400'}`} />
+                <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-gray-500'}`}>
+                    {t.perOrderQty}
+                </span>
+             </div>
+             {/* Dynamic Height, No Scrollbar limitation as requested */}
+             <div className="pr-2">
+                <div className="grid grid-cols-1 gap-y-1">
+                  {result.orderTotals.map((ot) => (
+                      <div key={ot.orderNo} className={`flex justify-between items-center text-xs border-b pb-1 last:border-0 ${isDark ? 'border-slate-700' : 'border-gray-200/60'}`}>
+                          <span className={`font-medium truncate mr-2 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{ot.orderNo}</span>
+                          <span className={`font-mono font-semibold ${isDark ? 'text-white' : 'text-gray-600'}`}>{ot.qty}</span>
+                      </div>
+                  ))}
+                </div>
+             </div>
+        </div>
+
+        {/* 2. Grand Total Section (Priority: Second) */}
+        <div className={`p-4 flex flex-col justify-center min-w-[180px] border-b md:border-b-0 md:border-r bg-white dark:bg-slate-800 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+            <div className="flex items-center gap-2 mb-1">
+                <div className="p-1.5 bg-blue-100 rounded text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                    <PieChart className="w-4 h-4" />
+                </div>
+                <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    {t.totalQty}
+                </span>
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+                <span className={`text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                {result.totalQty.toLocaleString()}
+                </span>
+                <span className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{t.pairs}</span>
+            </div>
         </div>
 
         {/* Right: Big Action Button */}
-        <div className="p-3 sm:w-auto w-full flex items-center bg-gray-50 dark:bg-slate-800/50">
+        <div className="p-3 md:w-auto w-full flex items-center justify-center bg-gray-50 dark:bg-slate-800/50">
            <button 
              onClick={exportToExcel}
-             className="w-full sm:w-auto h-full min-h-[50px] px-8 flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow transition-all transform active:scale-95 group"
+             className="w-full md:w-auto h-full min-h-[50px] px-6 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow transition-all transform active:scale-95 group"
            >
               <div className="p-1 bg-white/20 rounded group-hover:bg-white/30 transition-colors">
-                <Download className="w-5 h-5" />
+                <Download className="w-4 h-4" />
               </div>
-              <span className="font-bold text-lg whitespace-nowrap">{t.exportExcel}</span>
+              <span className="font-bold text-sm whitespace-nowrap">{t.exportExcel}</span>
            </button>
         </div>
       </div>
@@ -136,11 +181,13 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
       {/* Table View */}
       <div className={`rounded-xl shadow-sm border flex-1 flex flex-col overflow-hidden transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
         <div className={`px-5 py-3 border-b flex justify-between items-center ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50/50'}`}>
-          <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>{t.sizeBreakdown}</h3>
+          <h3 className={`text-sm font-semibold flex items-center gap-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+             {t.summaryTitlePrefix} <span className="text-blue-600 dark:text-blue-400 mx-1">{orderCount}</span> {t.summaryTitleSuffix}
+          </h3>
           
           {/* Legend for Extras if they exist */}
           {result.infoColumns.length > 0 && (
-             <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400">
+             <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-slate-400 hidden sm:flex">
                 <span>Info:</span>
                 {result.infoColumns
                   .filter(c => c !== result.articleHeader && c !== result.modelHeader && c !== result.colorHeader)
@@ -151,40 +198,40 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
           )}
         </div>
         
-        <div className="flex-1 overflow-auto custom-scrollbar">
+        {/* Table Container with specific max-height for scrolling ~10 rows */}
+        <div className="overflow-y-auto custom-scrollbar max-h-[400px]">
           <table className={`min-w-full border-collapse`}>
             <thead className={`sticky top-0 z-10 ${headerBg}`}>
               <tr>
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                <th scope="col" className={`px-4 py-2 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.size}
                 </th>
-                <th scope="col" className={`px-6 py-3 text-right text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                <th scope="col" className={`px-4 py-2 text-right text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.qty}
                 </th>
                 {hasArticle && (
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                    <th scope="col" className={`px-4 py-2 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                         Article
                     </th>
                 )}
                 {hasModel && (
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                    <th scope="col" className={`px-4 py-2 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                         Model
                     </th>
                 )}
                 {hasColor && (
-                    <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                    <th scope="col" className={`px-4 py-2 text-left text-xs font-bold uppercase tracking-wider border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                         Colour
                     </th>
                 )}
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider w-1/2 border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                <th scope="col" className={`px-4 py-2 text-left text-xs font-bold uppercase tracking-wider w-1/2 border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                   {t.orderDetails}
                 </th>
               </tr>
             </thead>
             <tbody className={`${isDark ? 'bg-slate-800' : 'bg-white'}`}>
               {result.breakdown.map((item, idx) => {
-                // Color Logic: 
-                // Article/Model/Color: If all selected orders for this size share 1 value -> Green. Else -> Red.
+                // Color Logic
                 const articleColor = item.articles.length === 1 
                     ? (isDark ? 'text-green-400' : 'text-green-600') 
                     : (isDark ? 'text-red-400' : 'text-red-600');
@@ -199,40 +246,40 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
 
                 return (
                   <tr key={item.size} className={`transition-colors ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'}`}>
-                    <td className={`px-6 py-3 whitespace-nowrap text-sm font-medium border ${borderColor} ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
+                    <td className={`px-4 py-1.5 whitespace-nowrap text-sm font-medium border ${borderColor} ${isDark ? 'text-slate-200' : 'text-gray-900'}`}>
                       {item.size}
                     </td>
-                    <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-mono font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                    <td className={`px-4 py-1.5 whitespace-nowrap text-sm text-right font-mono font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                       {item.qty}
                     </td>
                     
                     {/* Article Column */}
                     {hasArticle && (
-                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${articleColor}`}>
+                        <td className={`px-4 py-1.5 whitespace-nowrap text-xs font-semibold border ${borderColor} ${articleColor}`}>
                             {item.articles.join('/')}
                         </td>
                     )}
 
                     {/* Model Column */}
                     {hasModel && (
-                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${modelColor}`}>
+                        <td className={`px-4 py-1.5 whitespace-nowrap text-xs font-semibold border ${borderColor} ${modelColor}`}>
                             {item.models.join('/')}
                         </td>
                     )}
 
                     {/* Color Column */}
                     {hasColor && (
-                        <td className={`px-6 py-3 whitespace-nowrap text-xs font-semibold border ${borderColor} ${colorColor}`}>
+                        <td className={`px-4 py-1.5 whitespace-nowrap text-xs font-semibold border ${borderColor} ${colorColor}`}>
                             {item.colors.join('/')}
                         </td>
                     )}
 
-                     <td className={`px-6 py-3 text-sm border ${borderColor}`}>
+                     <td className={`px-4 py-1.5 text-sm border ${borderColor}`}>
                         <div className="flex flex-wrap gap-2">
                            {item.orderBreakdown.map((detail, dIdx) => (
                                <div 
                                 key={dIdx} 
-                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300' : 'bg-gray-50 border-gray-200 text-gray-700'}`}
+                                className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium border ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300' : 'bg-gray-50 border-gray-200 text-gray-700'}`}
                                >
                                    <span className="opacity-70 mr-1">{detail.orderNo}:</span>
                                    <span className={`${isDark ? 'text-white' : 'text-black'} font-mono`}>{detail.qty}</span>
@@ -257,24 +304,24 @@ const NestingSummary: React.FC<NestingSummaryProps> = ({ result, lang, isDark })
             </tbody>
             <tfoot className={`sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] ${isDark ? 'bg-slate-700' : 'bg-gray-50'}`}>
                 <tr>
-                    <td className={`px-6 py-3 text-sm font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.grandTotal}</td>
-                    <td className={`px-6 py-3 text-sm text-right font-mono font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{result.totalQty}</td>
+                    <td className={`px-4 py-2 text-sm font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.grandTotal}</td>
+                    <td className={`px-4 py-2 text-sm text-right font-mono font-bold border ${borderColor} ${isDark ? 'text-white' : 'text-gray-900'}`}>{result.totalQty}</td>
                     {hasArticle && (
-                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        <td className={`px-4 py-2 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                             {result.summaryArticles.join(' / ')}
                         </td>
                     )}
                     {hasModel && (
-                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        <td className={`px-4 py-2 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                             {result.summaryModels.join(' / ')}
                         </td>
                     )}
                     {hasColor && (
-                        <td className={`px-6 py-3 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                        <td className={`px-4 py-2 text-xs font-semibold border ${borderColor} ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                             {result.summaryColors.join(' / ')}
                         </td>
                     )}
-                    <td className={`px-6 py-3 border ${borderColor}`}></td>
+                    <td className={`px-4 py-2 border ${borderColor}`}></td>
                 </tr>
             </tfoot>
           </table>

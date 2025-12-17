@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Moon, Sun, Globe, BookOpen } from 'lucide-react';
+import { Moon, Sun, Globe, BookOpen } from 'lucide-react';
 import { Language, translations } from '../utils/translations';
 import TutorialModal from './TutorialModal';
 
@@ -19,9 +19,11 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, isDark, setIsDark }) => 
       <header className={`${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} shadow-sm border-b transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={`${isDark ? 'bg-blue-500/20' : 'bg-adidas-blue/10'} p-2 rounded-lg`}>
-              <Layers className={`h-6 w-6 ${isDark ? 'text-blue-400' : 'text-blue-700'}`} />
-            </div>
+            <img 
+              src="/pma LOGO.ico" 
+              alt="PMA Logo" 
+              className="h-10 w-auto object-contain"
+            />
             <div>
               <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.appTitle}</h1>
               <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{t.appSubtitle}</p>

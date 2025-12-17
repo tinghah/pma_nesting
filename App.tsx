@@ -112,10 +112,11 @@ const App: React.FC = () => {
         sizeDataMap.set(size, { total: 0, orders: new Map(), articles: new Set(), models: new Set(), colors: new Set() });
     });
 
-    // Track Global Distincts
+    // Track Global Distincts and Order Totals
     const globalArticles = new Set<string>();
     const globalModels = new Set<string>();
     const globalColors = new Set<string>();
+    const orderTotalsMap = new Map<string, number>();
 
     // Calculate sums
     filteredRows.forEach(row => {
@@ -151,6 +152,7 @@ const App: React.FC = () => {
             }
             
             if (!isNaN(numVal) && numVal > 0) {
+                // Update Size Breakdown
                 const entry = sizeDataMap.get(size);
                 if (entry) {
                     entry.total += numVal;
@@ -169,6 +171,10 @@ const App: React.FC = () => {
                     if (rowModel) entry.models.add(rowModel);
                     if (rowColor) entry.colors.add(rowColor);
                 }
+
+                // Update Total per Order
+                const currentOrderTotal = orderTotalsMap.get(soNum) || 0;
+                orderTotalsMap.set(soNum, currentOrderTotal + numVal);
             }
         });
     });
@@ -195,8 +201,13 @@ const App: React.FC = () => {
 
     const totalQty = breakdown.reduce((acc, curr) => acc + curr.qty, 0);
 
+    const orderTotals = Array.from(orderTotalsMap.entries())
+        .map(([orderNo, qty]) => ({ orderNo, qty }))
+        .sort((a, b) => b.qty - a.qty);
+
     setNestingResult({ 
-        totalQty, 
+        totalQty,
+        orderTotals,
         breakdown,
         infoColumns: data.infoColumns || [],
         articleHeader: data.articleHeader,
