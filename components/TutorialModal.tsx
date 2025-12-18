@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Upload, Settings2, Search, Download, Info, AlertTriangle, Code2, CheckCircle2 } from 'lucide-react';
+import { X, BookOpen, Upload, Settings2, Search, Download, Info, AlertTriangle, Code2, CheckCircle2, Link, Github, HardDrive } from 'lucide-react';
 import { Language, translations } from '../utils/translations';
 
 interface TutorialModalProps {
@@ -123,23 +123,49 @@ const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose, lang, is
             </ul>
           </div>
           
+          {/* Version Control & Source Code Section */}
+          <div>
+              <h3 className={`text-sm font-bold uppercase tracking-wider mb-4 border-b pb-2 ${isDark ? 'border-slate-700 text-slate-200' : 'border-gray-100 text-gray-800'}`}>
+                <Link className="w-4 h-4 inline-block mr-2" />
+                {t.versionControlTitle}
+              </h3>
+              <div className="grid grid-cols-1 gap-4">
+                  {/* Local Archive */}
+                  <div className={`p-4 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <HardDrive className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                        <h4 className="text-sm font-bold">{t.localArchiveTitle}</h4>
+                      </div>
+                      <p className={`text-xs mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{t.localArchiveDesc}</p>
+                      <a href={t.localArchiveUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline break-all font-mono">
+                          {t.localArchiveUrl}
+                      </a>
+                  </div>
+
+                  {/* Global Repo */}
+                  <div className={`p-4 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Github className={`w-4 h-4 ${isDark ? 'text-slate-300' : 'text-slate-900'}`} />
+                        <h4 className="text-sm font-bold">{t.globalRepoTitle}</h4>
+                      </div>
+                      <p className={`text-xs mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{t.globalRepoDesc}</p>
+                      <a href={t.globalRepoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline break-all font-mono">
+                          {t.globalRepoUrl}
+                      </a>
+                  </div>
+              </div>
+          </div>
+
           {/* Developer Note */}
-          <div className={`mt-8 pt-6 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+          <div className={`mt-4 pt-6 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
               <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                   <Code2 className="w-3.5 h-3.5" />
                   {t.devNoteTitle}
               </h3>
               <div className={`text-xs font-mono space-y-3 p-5 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-400' : 'bg-gray-100 border-gray-200 text-gray-600'}`}>
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">{t.devNote1}</p>
-                  <div>
-                    <p className="opacity-70 mb-1">{t.devNote2}</p>
-                    <a href="https://github.com/tinghah/pma_nesting.git" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-all">https://github.com/tinghah/pma_nesting.git</a>
-                  </div>
-                  <div className={`pt-3 mt-3 border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
-                    <p className="whitespace-pre-line leading-relaxed italic">
-                        {t.devNote3}
-                    </p>
-                  </div>
+                  <p className="whitespace-pre-line leading-relaxed">
+                    {t.devNoteContent}
+                  </p>
               </div>
           </div>
 

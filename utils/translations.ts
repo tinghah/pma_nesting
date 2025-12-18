@@ -4,7 +4,7 @@ export const translations = {
   en: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.1",
+    appVersion: "Release Version 2.2",
     totalQty: "Grand Total",
     perOrderQty: "Qty Per Order",
     exportExcel: "Export Excel",
@@ -51,7 +51,7 @@ export const translations = {
       "Custom Configuration: Manually toggle which columns to sum (Size) and which to display (Info).",
       "Validation: Instantly flags invalid or duplicate SO numbers.",
       "Dark Mode: Native support for low-light working environments.",
-      "Version 2.1: Enhanced readability and updated documentation."
+      "Version 2.2: Enhanced stability and minor UI refinements."
     ],
 
     // Steps
@@ -75,16 +75,22 @@ export const translations = {
 
     // Dev Note
     devNoteTitle: "Developer Note",
-    devNote1: "This tool was developed using Google AI Studio.",
-    devNote2: "Source code repository (GitHub):",
-    devNote3: "For any suggestions, issues, or feedback, please contact the PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com).",
+    devNoteContent: "This tool was developed using Google AI Studio.\n\nFor any suggestions, issues, or feedback, please contact the PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com).",
     
+    versionControlTitle: "Version Control & Source Code",
+    localArchiveTitle: "Local Archive",
+    localArchiveDesc: "Managed via Synology Drive (Access restricted to internal PCM network).",
+    localArchiveUrl: "https://mmoc01.pouchen.com/d/f/16FceC3OPDzYV3RC13fY8plepgCbEPbN",
+    globalRepoTitle: "Global Repository",
+    globalRepoDesc: "GitHub - pma_nesting for source code history and collaborative development.",
+    globalRepoUrl: "https://github.com/tinghah/pma_nesting.git",
+
     close: "Close"
   },
   my: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.1",
+    appVersion: "Release Version 2.2",
     totalQty: "စုစုပေါင်း အရေအတွက်",
     perOrderQty: "အော်ဒါအလိုက် အရေအတွက်",
     exportExcel: "Excel သို့ထုတ်ယူမည်",
@@ -131,7 +137,7 @@ export const translations = {
       "စိတ်ကြိုက် ပြင်ဆင်နိုင်ခြင်း (တွက်ချက်လိုသော ဆိုဒ်ကော်လံများကို ရွေးချယ်နိုင်သည်)",
       "အော်ဒါနံပါတ် မှားယွင်းမှုများကို ချက်ချင်း စစ်ဆေးပေးခြင်း",
       "Dark Mode စနစ် ပါဝင်ခြင်း",
-      "ဗားရှင်း ၂.၁: ဖတ်ရှုရ ပိုမိုလွယ်ကူအောင် ပြုပြင်ထားပါသည်။"
+      "ဗားရှင်း ၂.၂: ပိုမိုကောင်းမွန်အောင် ပြင်ဆင်ထားပါသည်။"
     ],
 
     howToTitle: "အဆင့်ဆင့် အသုံးပြုနည်း",
@@ -152,16 +158,22 @@ export const translations = {
     ],
 
     devNoteTitle: "Developer မှတ်ချက်",
-    devNote1: "ဤကိရိယာကို Google AI Studio အသုံးပြု၍ တည်ဆောက်ထားပါသည်။",
-    devNote2: "Source code repository (GitHub):",
-    devNote3: "အကြံပြုချက်များ သို့မဟုတ် ပြဿနာများရှိပါက PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com) ထံသို့ တိုက်ရိုက်ဆက်သွယ်နိုင်ပါသည်။",
+    devNoteContent: "ဤကိရိယာကို Google AI Studio အသုံးပြု၍ တည်ဆောက်ထားပါသည်။\n\nအကြံပြုချက်များ သို့မဟုတ် ပြဿနာများရှိပါက PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com) ထံသို့ တိုက်ရိုက်ဆက်သွယ်နိုင်ပါသည်။",
+    
+    versionControlTitle: "Version Control & Source Code",
+    localArchiveTitle: "Local Archive",
+    localArchiveDesc: "Synology Drive ဖြင့် စီမံခန့်ခွဲသည် (PCM Network အတွင်းသာ)။",
+    localArchiveUrl: "https://mmoc01.pouchen.com/d/f/16FceC3OPDzYV3RC13fY8plepgCbEPbN",
+    globalRepoTitle: "Global Repository",
+    globalRepoDesc: "GitHub - pma_nesting: ပူးပေါင်းဆောင်ရွက်ရန်နှင့် ကုတ်သိမ်းဆည်းရန်။",
+    globalRepoUrl: "https://github.com/tinghah/pma_nesting.git",
 
     close: "ပိတ်မည်"
   },
   tw: {
     appTitle: "PMA 排版系統",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.1",
+    appVersion: "Release Version 2.2",
     totalQty: "總計數量",
     perOrderQty: "各訂單數量",
     exportExcel: "匯出 Excel",
@@ -200,38 +212,43 @@ export const translations = {
     tutorial: "使用教學",
     tutorialTitle: "使用指南",
     whatIsTitle: "關於 PMA Nesting",
-    whatIsDesc: "PMA Nesting 是專為 Pou Chen Myanmar (Adidas) 開發的工具，用於自動合併鞋類生產訂單。它能將原始 Excel 數據中的多個訂單合併為單一的排版明細，自動計算總數並保留貨號、鞋型和顏色等詳細信息。",
+    whatIsDesc: "PMA Nesting 是專為 Pou Chen Myanmar (Adidas) 開發的工具，用於自動合併鞋類生產訂單。",
     
     featuresTitle: "主要功能",
     featuresList: [
       "智慧欄位偵測：自動識別尺寸、貨號、型體和顏色欄位。",
-      "自定義配置：可手動勾選需要加總的尺寸欄位和需要顯示的資訊欄位。",
+      "自定義配置：可手動勾選需要加總的尺寸欄位。",
       "即時驗證：立即標記無效或重複的訂單編號。",
       "深色模式：支援低光源環境操作。",
-      "版本 2.1：增強可讀性並更新文檔。"
+      "版本 2.2：增強穩定性與 UI 優化。"
     ],
 
     howToTitle: "分步操作指南",
     step1: "1. 數據源",
-    step1Desc: "上傳您的 Excel 文件 (.xlsx) 或加載服務器上的 'data.xlsx'。請確保文件包含帶有 'Order No' 的標題行。",
+    step1Desc: "上傳您的 Excel 文件 (.xlsx) 或加載服務器上的 'data.xlsx'。",
     step2: "2. 配置欄位",
-    step2Desc: "系統會彈出配置面板。請勾選包含數量 (Sizes) 的欄位，並選擇需要在報告中顯示的其他資訊 (如顏色/貨號)。",
+    step2Desc: "系統會彈出配置面板。請勾選包含數量 (Sizes) 的欄位。",
     step3: "3. 選擇訂單",
-    step3Desc: "在左側面板輸入您要合併的訂單號 (SO Number)。使用 '+ Add' 按鈕添加更多行。系統會即時驗證號碼。",
+    step3Desc: "在左側面板輸入您要合併的訂單號 (SO Number)。",
     step4: "4. 生成與匯出",
-    step4Desc: "點擊 'Generate Nesting' 進行計算。確認結果無誤後，點擊 'Export Excel' 下載 PMA_Nesting_Result.xlsx。",
+    step4Desc: "點擊 'Generate Nesting' 進行計算，然後匯出 Excel。",
 
     notesTitle: "注意事項與故障排除",
     notesList: [
       "文件格式：僅支援標準 .xlsx 文件。",
-      "錯誤提示：若顯示 'Invalid Order'，請檢查輸入號碼是否有空格或拼寫錯誤。",
-      "結果為空：如果總計為 0，請檢查配置步驟中是否正確勾選了尺寸欄位。"
+      "錯誤提示：若顯示 'Invalid Order'，請檢查輸入號碼是否有空格。"
     ],
 
     devNoteTitle: "開發者註釋",
-    devNote1: "此工具使用 Google AI Studio 開發。",
-    devNote2: "源代碼存儲庫 (GitHub):",
-    devNote3: "如有任何建議、問題或反饋，請直接聯繫 PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com)。",
+    devNoteContent: "此工具使用 Google AI Studio 開發。\n\n如有任何建議、問題 or 反饋，請聯繫 PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com)。",
+
+    versionControlTitle: "版本控制與源代碼",
+    localArchiveTitle: "本地歸檔",
+    localArchiveDesc: "透過 Synology Drive 管理 (僅限 PCM 內部網絡)。",
+    localArchiveUrl: "https://mmoc01.pouchen.com/d/f/16FceC3OPDzYV3RC13fY8plepgCbEPbN",
+    globalRepoTitle: "全球存儲庫",
+    globalRepoDesc: "GitHub - pma_nesting 用於源代碼歷史記錄與協作開發。",
+    globalRepoUrl: "https://github.com/tinghah/pma_nesting.git",
 
     close: "關閉"
   }
