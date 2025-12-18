@@ -4,7 +4,7 @@ export const translations = {
   en: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.2",
+    appVersion: "Release Version 2.4",
     totalQty: "Grand Total",
     perOrderQty: "Qty Per Order",
     exportExcel: "Export Excel",
@@ -49,9 +49,9 @@ export const translations = {
     featuresList: [
       "Smart Column Detection: Auto-detects Size, Article, Model, and Color columns.",
       "Custom Configuration: Manually toggle which columns to sum (Size) and which to display (Info).",
-      "Validation: Instantly flags invalid or duplicate SO numbers.",
+      "CSV Telemetry: Local logging system for usage auditing (v2.4).",
       "Dark Mode: Native support for low-light working environments.",
-      "Version 2.2: Enhanced stability and minor UI refinements."
+      "Admin Tool: Secret 'Download Logs' shortcut (Ctrl+Shift+L) for developers."
     ],
 
     // Steps
@@ -70,7 +70,7 @@ export const translations = {
     notesList: [
       "File Format: Only standard .xlsx files are supported.",
       "Errors: 'Invalid Order' means the typed number doesn't match the file exactly (check spaces).",
-      "Empty Result: If the Grand Total is 0, check your Column Configuration to ensure Size columns are selected."
+      "Logging: Usage is logged locally. Press Ctrl+Shift+L to download the audit log."
     ],
 
     // Dev Note
@@ -90,7 +90,7 @@ export const translations = {
   my: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.2",
+    appVersion: "Release Version 2.4",
     totalQty: "စုစုပေါင်း အရေအတွက်",
     perOrderQty: "အော်ဒါအလိုက် အရေအတွက်",
     exportExcel: "Excel သို့ထုတ်ယူမည်",
@@ -135,9 +135,9 @@ export const translations = {
     featuresList: [
       "ကော်လံများကို အလိုအလျောက် သိရှိနိုင်ခြင်း (Size, Article, Model, Color)",
       "စိတ်ကြိုက် ပြင်ဆင်နိုင်ခြင်း (တွက်ချက်လိုသော ဆိုဒ်ကော်လံများကို ရွေးချယ်နိုင်သည်)",
-      "အော်ဒါနံပါတ် မှားယွင်းမှုများကို ချက်ချင်း စစ်ဆေးပေးခြင်း",
+      "CSV Logging စနစ် (v2.4) ပါဝင်ခြင်း",
       "Dark Mode စနစ် ပါဝင်ခြင်း",
-      "ဗားရှင်း ၂.၂: ပိုမိုကောင်းမွန်အောင် ပြင်ဆင်ထားပါသည်။"
+      "Admin Tool: Ctrl+Shift+L ဖြင့် အသုံးပြုမှုမှတ်တမ်းကို CSV ထုတ်ယူနိုင်သည်။"
     ],
 
     howToTitle: "အဆင့်ဆင့် အသုံးပြုနည်း",
@@ -154,7 +154,7 @@ export const translations = {
     notesList: [
       ".xlsx ဖိုင်များကိုသာ အသုံးပြုနိုင်သည်။",
       "'Invalid Order' ပြလျှင် စာလုံးပေါင်း သို့မဟုတ် Space များကို ပြန်စစ်ပါ။",
-      "စုစုပေါင်း ၀ ဖြစ်နေလျှင် ကော်လံသတ်မှတ်ချက်တွင် Size များကို ရွေးထားခြင်း ရှိမရှိ ပြန်စစ်ပါ။"
+      "Audit Log ထုတ်ယူရန် Ctrl+Shift+L ကို နှိပ်ပါ။"
     ],
 
     devNoteTitle: "Developer မှတ်ချက်",
@@ -173,7 +173,7 @@ export const translations = {
   tw: {
     appTitle: "PMA 排版系統",
     appSubtitle: "Pouchen Myanmar Adidas",
-    appVersion: "Release Version 2.2",
+    appVersion: "Release Version 2.4",
     totalQty: "總計數量",
     perOrderQty: "各訂單數量",
     exportExcel: "匯出 Excel",
@@ -218,9 +218,9 @@ export const translations = {
     featuresList: [
       "智慧欄位偵測：自動識別尺寸、貨號、型體和顏色欄位。",
       "自定義配置：可手動勾選需要加總的尺寸欄位。",
-      "即時驗證：立即標記無效或重複的訂單編號。",
+      "CSV 日誌系統 (v2.4)：提供本地使用分析。",
       "深色模式：支援低光源環境操作。",
-      "版本 2.2：增強穩定性與 UI 優化。"
+      "管理員工具：Ctrl+Shift+L 快速匯出使用日誌 CSV。"
     ],
 
     howToTitle: "分步操作指南",
@@ -236,7 +236,8 @@ export const translations = {
     notesTitle: "注意事項與故障排除",
     notesList: [
       "文件格式：僅支援標準 .xlsx 文件。",
-      "錯誤提示：若顯示 'Invalid Order'，請檢查輸入號碼是否有空格。"
+      "錯誤提示：若顯示 'Invalid Order'，請檢查輸入號碼是否有空格。",
+      "日誌：按 Ctrl+Shift+L 下載本地使用日誌 CSV。"
     ],
 
     devNoteTitle: "開發者註釋",
