@@ -25,7 +25,12 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, isDark, setIsDark }) => 
               className="h-10 w-auto object-contain"
             />
             <div>
-              <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.appTitle}</h1>
+              <div className="flex items-baseline gap-2">
+                <h1 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.appTitle}</h1>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isDark ? 'bg-slate-700 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                    v2.1
+                </span>
+              </div>
               <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{t.appSubtitle}</p>
             </div>
           </div>

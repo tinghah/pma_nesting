@@ -4,6 +4,7 @@ export const translations = {
   en: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
+    appVersion: "Release Version 2.1",
     totalQty: "Grand Total",
     perOrderQty: "Qty Per Order",
     exportExcel: "Export Excel",
@@ -41,7 +42,7 @@ export const translations = {
     tutorial: "Tutorial",
     tutorialTitle: "User Guide",
     whatIsTitle: "About PMA Nesting",
-    whatIsDesc: "PMA Nesting is a tool built for Pou Chen Myanmar (Adidas) to automate the consolidation of shoe production orders. It takes raw Excel size-run data and merges multiple orders into a single, optimized nesting breakdown, calculating totals while preserving article, model, and color details.",
+    whatIsDesc: "PMA Nesting is a professional tool built for Pou Chen Myanmar (Adidas) to automate the consolidation of shoe production orders. It takes raw Excel size-run data and merges multiple orders into a single, optimized nesting breakdown, calculating totals while preserving article, model, and color details.",
     
     // New Features Section
     featuresTitle: "Key Features",
@@ -49,7 +50,8 @@ export const translations = {
       "Smart Column Detection: Auto-detects Size, Article, Model, and Color columns.",
       "Custom Configuration: Manually toggle which columns to sum (Size) and which to display (Info).",
       "Validation: Instantly flags invalid or duplicate SO numbers.",
-      "Dark Mode: Native support for low-light working environments."
+      "Dark Mode: Native support for low-light working environments.",
+      "Version 2.1: Enhanced readability and updated documentation."
     ],
 
     // Steps
@@ -73,15 +75,16 @@ export const translations = {
 
     // Dev Note
     devNoteTitle: "Developer Note",
-    devNote1: "1. Used Google Ai Studio to build this tool.",
-    devNote2: "2. Repo at git hub",
-    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+    devNote1: "This tool was developed using Google AI Studio.",
+    devNote2: "Source code repository (GitHub):",
+    devNote3: "For any suggestions, issues, or feedback, please contact the PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com).",
     
     close: "Close"
   },
   my: {
     appTitle: "PMA Nesting",
     appSubtitle: "Pouchen Myanmar Adidas",
+    appVersion: "Release Version 2.1",
     totalQty: "စုစုပေါင်း အရေအတွက်",
     perOrderQty: "အော်ဒါအလိုက် အရေအတွက်",
     exportExcel: "Excel သို့ထုတ်ယူမည်",
@@ -127,7 +130,8 @@ export const translations = {
       "ကော်လံများကို အလိုအလျောက် သိရှိနိုင်ခြင်း (Size, Article, Model, Color)",
       "စိတ်ကြိုက် ပြင်ဆင်နိုင်ခြင်း (တွက်ချက်လိုသော ဆိုဒ်ကော်လံများကို ရွေးချယ်နိုင်သည်)",
       "အော်ဒါနံပါတ် မှားယွင်းမှုများကို ချက်ချင်း စစ်ဆေးပေးခြင်း",
-      "Dark Mode စနစ် ပါဝင်ခြင်း"
+      "Dark Mode စနစ် ပါဝင်ခြင်း",
+      "ဗားရှင်း ၂.၁: ဖတ်ရှုရ ပိုမိုလွယ်ကူအောင် ပြုပြင်ထားပါသည်။"
     ],
 
     howToTitle: "အဆင့်ဆင့် အသုံးပြုနည်း",
@@ -148,15 +152,16 @@ export const translations = {
     ],
 
     devNoteTitle: "Developer မှတ်ချက်",
-    devNote1: "1. Used Google Ai Studio to build this tool.",
-    devNote2: "2. Repo at git hub",
-    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+    devNote1: "ဤကိရိယာကို Google AI Studio အသုံးပြု၍ တည်ဆောက်ထားပါသည်။",
+    devNote2: "Source code repository (GitHub):",
+    devNote3: "အကြံပြုချက်များ သို့မဟုတ် ပြဿနာများရှိပါက PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com) ထံသို့ တိုက်ရိုက်ဆက်သွယ်နိုင်ပါသည်။",
 
     close: "ပိတ်မည်"
   },
   tw: {
     appTitle: "PMA 排版系統",
     appSubtitle: "Pouchen Myanmar Adidas",
+    appVersion: "Release Version 2.1",
     totalQty: "總計數量",
     perOrderQty: "各訂單數量",
     exportExcel: "匯出 Excel",
@@ -202,7 +207,8 @@ export const translations = {
       "智慧欄位偵測：自動識別尺寸、貨號、型體和顏色欄位。",
       "自定義配置：可手動勾選需要加總的尺寸欄位和需要顯示的資訊欄位。",
       "即時驗證：立即標記無效或重複的訂單編號。",
-      "深色模式：支援低光源環境操作。"
+      "深色模式：支援低光源環境操作。",
+      "版本 2.1：增強可讀性並更新文檔。"
     ],
 
     howToTitle: "分步操作指南",
@@ -223,9 +229,9 @@ export const translations = {
     ],
 
     devNoteTitle: "開發者註釋",
-    devNote1: "1. Used Google Ai Studio to build this tool.",
-    devNote2: "2. Repo at git hub",
-    devNote3: "3. Any suggestion or feedback can sent directly to PCM IT Team Manager Mr Paul ( paul.huang1@pouchen.com ).",
+    devNote1: "此工具使用 Google AI Studio 開發。",
+    devNote2: "源代碼存儲庫 (GitHub):",
+    devNote3: "如有任何建議、問題或反饋，請直接聯繫 PCM IT Team Manager,\nMr. Paul Huang (paul.huang1@pouchen.com)。",
 
     close: "關閉"
   }

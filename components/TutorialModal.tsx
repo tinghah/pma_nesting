@@ -25,7 +25,7 @@ const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose, lang, is
             </div>
             <div>
               <h2 className="text-lg font-bold">{t.tutorialTitle}</h2>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>v1.0</p>
+              <p className={`text-xs font-semibold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{t.appVersion}</p>
             </div>
           </div>
           <button onClick={onClose} className={`p-1.5 rounded-full hover:bg-opacity-80 transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
@@ -129,14 +129,17 @@ const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose, lang, is
                   <Code2 className="w-3.5 h-3.5" />
                   {t.devNoteTitle}
               </h3>
-              <div className={`text-xs font-mono space-y-2 p-4 rounded-lg ${isDark ? 'bg-slate-900/50 text-slate-400' : 'bg-gray-100 text-gray-600'}`}>
-                  <p>{t.devNote1}</p>
-                  <p>
-                    {t.devNote2}: <a href="https://github.com/tinghah/pma_nesting.git" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">https://github.com/tinghah/pma_nesting.git</a>
-                  </p>
-                  <p className="whitespace-pre-line leading-relaxed">
-                    {t.devNote3}
-                  </p>
+              <div className={`text-xs font-mono space-y-3 p-5 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-400' : 'bg-gray-100 border-gray-200 text-gray-600'}`}>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">{t.devNote1}</p>
+                  <div>
+                    <p className="opacity-70 mb-1">{t.devNote2}</p>
+                    <a href="https://github.com/tinghah/pma_nesting.git" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-all">https://github.com/tinghah/pma_nesting.git</a>
+                  </div>
+                  <div className={`pt-3 mt-3 border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                    <p className="whitespace-pre-line leading-relaxed italic">
+                        {t.devNote3}
+                    </p>
+                  </div>
               </div>
           </div>
 
